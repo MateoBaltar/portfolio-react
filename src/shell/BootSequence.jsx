@@ -36,10 +36,15 @@ export function BootSequence({ lines, lineDelayMs = 400, onComplete = () => {} }
   }, [lines, lineDelayMs]);
 
   return (
-    <div>
+    <div className="boot">
       {lines.slice(0, visibleCount).map((line, index) => (
-        <div key={index}>{line}</div>
+        <div className="boot__line" key={index}>
+          {line}
+        </div>
       ))}
+      <span className="boot__cursor" aria-hidden="true">
+        ▊
+      </span>
     </div>
   );
 }

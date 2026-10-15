@@ -106,7 +106,7 @@ function ShellBody() {
   const ActiveMobileSection = activeSection ? SECTIONS[activeSection] : null;
 
   return (
-    <div>
+    <div className="shell">
       <Taskbar
         navItems={navItems}
         openWindowIds={openWindowIds}
@@ -148,7 +148,7 @@ function ShellBody() {
             );
           })
         : ActiveMobileSection && (
-            <div data-testid={`section-${activeSection}`}>
+            <div className="section-page" data-testid={`section-${activeSection}`}>
               <ActiveMobileSection />
             </div>
           )}

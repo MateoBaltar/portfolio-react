@@ -5,13 +5,16 @@ export function Contact() {
   const contact = t('contact');
 
   return (
-    <section>
+    <section className="section">
       <h2>{contact.title}</h2>
-      <p>{contact.location}</p>
-      <p>{contact.phone}</p>
-      <p>{contact.email}</p>
+      <div className="contact__details">
+        <p>{contact.location}</p>
+        <p>{contact.phone}</p>
+        <p>{contact.email}</p>
+      </div>
 
       <form
+        className="contact-form"
         data-testid="contact-form"
         action="https://formsubmit.co/mateobaltar@gmail.com"
         method="POST"

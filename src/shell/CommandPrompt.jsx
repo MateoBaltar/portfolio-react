@@ -37,15 +37,18 @@ export function CommandPrompt({
   const inputLabel = prompt ? `${prompt} command input` : 'command input';
 
   return (
-    <div>
-      <div>
+    <div className="prompt">
+      <div className="prompt__log">
         {log.map((entry, index) => (
-          <div key={index}>{entry}</div>
+          <div className="prompt__log-line" key={index}>
+            {entry}
+          </div>
         ))}
       </div>
-      <form onSubmit={handleSubmit}>
-        {prompt && <span>{prompt}</span>}
+      <form className="prompt__form" onSubmit={handleSubmit}>
+        {prompt && <span className="prompt__sigil">{prompt}</span>}
         <input
+          className="prompt__input"
           role="textbox"
           aria-label={inputLabel}
           value={value}

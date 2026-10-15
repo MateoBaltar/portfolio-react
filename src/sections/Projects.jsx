@@ -5,23 +5,27 @@ export function Projects() {
   const projects = t('projects');
 
   return (
-    <section>
+    <section className="section">
       <h2>{projects.title}</h2>
       {projects.items.map((project) => (
-        <article key={project.title}>
+        <article className="projects__item" key={project.title}>
           <h3>{project.title}</h3>
           <p>{project.description}</p>
-          <ul>
+          <ul className="skills__list">
             {project.tools.map((tool) => (
-              <li key={tool}>{tool}</li>
+              <li className="skills__list-item" key={tool}>
+                {tool}
+              </li>
             ))}
           </ul>
-          <a href={project.liveDemoLink} target="_blank" rel="noreferrer">
-            {projects.liveDemoLabel}
-          </a>
-          <a href={project.codeLink} target="_blank" rel="noreferrer">
-            {projects.codeLabel}
-          </a>
+          <div className="projects__links">
+            <a className="projects__link" href={project.liveDemoLink} target="_blank" rel="noreferrer">
+              {projects.liveDemoLabel}
+            </a>
+            <a className="projects__link" href={project.codeLink} target="_blank" rel="noreferrer">
+              {projects.codeLabel}
+            </a>
+          </div>
         </article>
       ))}
     </section>

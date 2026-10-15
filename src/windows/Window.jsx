@@ -19,6 +19,10 @@ export function Window({ id, title, onClose = () => {}, children }) {
   const y = record?.y ?? 0;
   const zIndex = record?.zIndex ?? 0;
   const fullscreen = record?.fullscreen ?? false;
+  // Display-only: the frontmost window by z-index gets a visually
+  // distinct title bar. Purely derived from existing state, no behavior change.
+  const isFocused =
+    windows.length > 0 && windows.every((w) => w.id === id || w.zIndex < zIndex);
 
   const handleTitleBarPointerDown = (event) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -88,28 +92,33 @@ export function Window({ id, title, onClose = () => {}, children }) {
   return (
     <div
       ref={containerRef}
+      className="window"
       data-testid={`window-${id}`}
       data-fullscreen={fullscreen}
       style={style}
       onClick={handleBodyClick}
     >
       <div
+        className={
+          isFocused ? 'window__titlebar window__titlebar--focused' : 'window__titlebar'
+        }
         data-testid={`window-titlebar-${id}`}
         onPointerDown={handleTitleBarPointerDown}
         onPointerMove={handleTitleBarPointerMove}
         onPointerUp={handleTitleBarPointerUp}
         onDoubleClick={handleTitleBarDoubleClick}
       >
-        <span>{title}</span>
+        <span className="window__title">{title}</span>
         <button
           type="button"
+          className="window__close"
           data-testid={`window-close-${id}`}
           onClick={handleClose}
         >
           x
         </button>
       </div>
-      <div>{children}</div>
+      <div className="window__body">{children}</div>
     </div>
   );
 }

@@ -5,14 +5,16 @@ export function Skills() {
   const skills = t('skills');
 
   return (
-    <section>
+    <section className="section">
       <h2>{skills.title}</h2>
       {skills.categories.map((category) => (
         <div key={category.label}>
           <h3>{category.label}</h3>
-          <ul>
+          <ul className="skills__list">
             {category.items.map((item) => (
-              <li key={item}>{item}</li>
+              <li className="skills__list-item" key={item}>
+                {item}
+              </li>
             ))}
           </ul>
         </div>

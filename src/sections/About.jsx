@@ -5,7 +5,7 @@ export function About() {
   const about = t('about');
 
   return (
-    <section>
+    <section className="section">
       <h2>{about.title}</h2>
       <p>{about.summary}</p>
     </section>
