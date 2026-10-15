@@ -1,0 +1,61 @@
+{
+  "nav": { "about": "About", "skills": "Skills", "experience": "Experience", "projects": "Projects", "contact": "Contact" },
+  "shell": {
+    "bootLines": ["Booting mateoOS v1.0...", "Loading profile: Mateo Baltar", "Mounting /experience ...", "Mounting /skills ...", "Mounting /projects ...", "Ready."],
+    "prompt": "guest@mateoos:~$",
+    "helpIntro": "Available commands:",
+    "commandNotFound": "command not found, try 'help'",
+    "hint": "Type 'help' to see available commands."
+  },
+  "about": {
+    "title": "About",
+    "summary": "Backend-leaning full-stack developer, two and a half years in. Most of that time went into Python, PostgreSQL and JavaScript work inside Odoo, a big open-source ERP, building for clients outside Argentina. Day to day that means business logic in Python, data models through the ORM, front-end components in OWL and QWeb, and wiring systems together over REST and XML-RPC, a couple of those integrations were chatbots. I use Git, Docker and Linux without thinking about it at this point. Native Spanish speaker, fluent in English, based in Uppsala, Sweden, and looking for backend or full-stack work outside the Odoo world."
+  },
+  "skills": {
+    "title": "Skills",
+    "categories": [
+      { "label": "Languages", "items": ["Python", "JavaScript", "SQL", "HTML", "XML", "CSS"] },
+      { "label": "Back-end", "items": ["Python", "ORM/data modelling", "PostgreSQL", "business logic", "workflow automation"] },
+      { "label": "Front-end", "items": ["JavaScript", "OWL (component-based UI)", "HTML/CSS", "QWeb templating"] },
+      { "label": "APIs", "items": ["REST", "XML-RPC", "JSON", "chatbot integrations", "third-party integrations"] },
+      { "label": "Tools", "items": ["Git", "GitHub", "GitLab", "Docker", "Linux", "AWS", "Claude Code"] },
+      { "label": "Odoo ERP (v13-v18)", "items": ["Sales", "POS", "Inventory", "Accounting", "CRM", "Website"] }
+    ]
+  },
+  "experience": {
+    "title": "Experience",
+    "jobsTitle": "Work experience",
+    "jobs": [
+      { "company": "NTB Solutions S.A.", "role": "Software Developer (Odoo/ERP)", "location": "Argentina", "dates": "Aug 2026 – Nov 2026", "description": "Python backend and JavaScript/XML frontend work on client ERP projects: extending data models and business logic through the ORM, building a few integrations with outside systems, and taking features from a client's request through to something actually running in production." },
+      { "company": "Mirgor", "role": "Software Developer (Odoo/ERP)", "location": "Argentina", "dates": "Aug 2024 – Aug 2026 (2 years)", "description": "Built and maintained ERP modules end to end, back-end logic, data models, and front-end UI. Most of it was Python on the ORM side, extending models and views through inheritance over PostgreSQL, plus JavaScript, XML and QWeb on the front end. Set up REST and XML-RPC integrations with outside systems (two of them chatbots) to cut down manual work in the client's workflow. Used Docker to keep dev environments consistent across the team and Git for version control on Linux. Dealt with clients directly for requirements." },
+      { "company": "Fundación Mirgor", "role": "Software Developer (Odoo/ERP)", "location": "Río Grande, Argentina", "dates": "Apr 2024 – Aug 2024 (5 months)", "description": "First real development job. Adapted ERP modules to what clients needed (back-end logic, data models, some front-end work) under senior developers who were still teaching me the framework. Turned into the full-time role at Mirgor a few months later." }
+    ],
+    "internship": { "company": "Municipality of Río Grande", "role": "IT Support Intern (IT Department)", "location": "Argentina", "description": "Diagnosed, repaired and performed preventive maintenance on hardware and equipment used by municipal staff." },
+    "educationTitle": "Education",
+    "education": { "institution": "Teclab Instituto Técnico Superior", "program": "Higher Technical Degree in Programming", "dates": "Nov 2023 – 2025", "description": "Higher technical degree in software development (Técnico Superior en Programación), with coursework in programming, databases and back-end development." },
+    "certificationsTitle": "Certifications",
+    "certifications": ["Full-Stack Programming Certification (EGG Cooperation)", "IGCSE in Information and Communication Technology (Cambridge)"],
+    "languagesTitle": "Languages",
+    "languages": [{ "name": "Spanish", "level": "native" }, { "name": "English", "level": "bilingual / fluent" }, { "name": "Swedish", "level": "beginner (SFI course, just started)" }],
+    "downloadCv": "Download CV (PDF)"
+  },
+  "projects": {
+    "title": "Projects",
+    "liveDemoLabel": "Live Demo",
+    "codeLabel": "Code",
+    "items": [
+      { "title": "CipherTools", "description": "Encoder/decoder for common cipher algorithms", "tools": ["React", "JavaScript", "API", "Vercel"], "liveDemoLink": "https://cipher-tools.vercel.app", "codeLink": "https://github.com/MateoBaltar/CipherTools" },
+      { "title": "CompraTech", "description": "Technology e-commerce storefront", "tools": ["React", "JavaScript", "Sanity", "Vercel"], "liveDemoLink": "https://compra-tech-ecommerce.vercel.app", "codeLink": "https://github.com/MateoBaltar/CompraTech_Ecommerce" }
+    ]
+  },
+  "contact": {
+    "title": "Contact",
+    "location": "Uppsala, Sweden",
+    "phone": "+46 76 865 87 36",
+    "email": "mateobaltar@gmail.com",
+    "formName": "Name",
+    "formEmail": "Email",
+    "formMessage": "Message",
+    "formSubmit": "SUBMIT"
+  }
+}
