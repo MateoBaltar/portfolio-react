@@ -122,3 +122,25 @@ test('typing an unknown command into the real command prompt shows the not-found
   expect(screen.getByText('command not found, try \'help\'')).toBeInTheDocument();
   vi.useRealTimers();
 });
+
+test('desktop: double-clicking a desktop icon opens its section, same as the matching nav button', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.getByTestId('desktop-icon-skills')).toBeInTheDocument();
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-skills'));
+  expect(screen.getByTestId('window-skills')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('mobile: desktop icons are not rendered', () => {
+  window.matchMedia = () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.queryByTestId('desktop-icon-about')).toBeNull();
+  vi.useRealTimers();
+});

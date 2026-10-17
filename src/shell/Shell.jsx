@@ -6,6 +6,7 @@ import { useViewportMode } from '../hooks/useViewportMode';
 import { BootSequence } from './BootSequence';
 import { CommandPrompt } from './CommandPrompt';
 import { Taskbar } from './Taskbar';
+import { Desktop } from './Desktop';
 import { About } from '../sections/About';
 import { Skills } from '../sections/Skills';
 import { Experience } from '../sections/Experience';
@@ -129,6 +130,7 @@ function ShellBody() {
         prompt={shellStrings.prompt}
         hint={shellStrings.hint}
       />
+      {mode === 'desktop' && <Desktop items={navItems} onOpen={openSection} />}
       {mode === 'desktop'
         ? windows.map((w) => {
             const SectionComponent = SECTIONS[w.id];

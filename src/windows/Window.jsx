@@ -25,6 +25,11 @@ export function Window({ id, title, onClose = () => {}, children }) {
     windows.length > 0 && windows.every((w) => w.id === id || w.zIndex < zIndex);
 
   const handleTitleBarPointerDown = (event) => {
+    // Pointer capture on the title bar would otherwise steal the click
+    // away from the close button when a drag starts on top of it.
+    if (event.target.closest('.window__close')) {
+      return;
+    }
     const rect = containerRef.current?.getBoundingClientRect();
     dragStateRef.current = {
       pointerId: event.pointerId,

@@ -1,8 +1,8 @@
 {
   "nav": { "about": "About", "skills": "Skills", "experience": "Experience", "projects": "Projects", "contact": "Contact" },
   "shell": {
-    "bootLines": ["Booting mateoOS v1.0...", "Loading profile: Mateo Baltar", "Mounting /experience ...", "Mounting /skills ...", "Mounting /projects ...", "Ready."],
-    "prompt": "guest@mateoos:~$",
+    "bootLines": ["Booting FireOS v1.0...", "Loading profile: Mateo Baltar", "Mounting /experience ...", "Mounting /skills ...", "Mounting /projects ...", "Ready."],
+    "prompt": "guest@fireos:~$",
     "helpIntro": "Available commands:",
     "commandNotFound": "command not found, try 'help'",
     "hint": "Type 'help' to see available commands."

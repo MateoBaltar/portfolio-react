@@ -26,3 +26,21 @@ test('clicking close calls onClose', () => {
   fireEvent.click(screen.getByTestId('window-close-about'));
   expect(onClose).toHaveBeenCalled();
 });
+
+test('a pointerdown on the close button does not capture the pointer on the title bar', () => {
+  // Regression test: capturing here would steal the subsequent click away
+  // from the button in a real browser, even though jsdom's fireEvent.click
+  // can't reproduce that suppression directly.
+  const setPointerCapture = vi.fn();
+  window.HTMLElement.prototype.setPointerCapture = setPointerCapture;
+  render(
+    <WindowManagerProvider>
+      <Window id="about" title="About">content</Window>
+    </WindowManagerProvider>
+  );
+  fireEvent.pointerDown(screen.getByTestId('window-close-about'), { pointerId: 1 });
+  expect(setPointerCapture).not.toHaveBeenCalled();
+
+  fireEvent.pointerDown(screen.getByTestId('window-titlebar-about'), { pointerId: 2 });
+  expect(setPointerCapture).toHaveBeenCalledTimes(1);
+});
