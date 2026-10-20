@@ -5,6 +5,12 @@ function skipBoot() {
   act(() => { vi.runAllTimers(); });
 }
 
+afterEach(() => {
+  vi.restoreAllMocks();
+  // one test swaps in a fake localStorage; reset it so it doesn't leak into later tests
+  window.localStorage = undefined;
+});
+
 test('desktop: clicking a nav item twice opens exactly one focused window', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
@@ -142,5 +148,65 @@ test('mobile: desktop icons are not rendered', () => {
   skipBoot();
 
   expect(screen.queryByTestId('desktop-icon-about')).toBeNull();
+  vi.useRealTimers();
+});
+
+test('mobile: the animated space background does not render', () => {
+  window.matchMedia = () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.queryByTestId('space-bg')).toBeNull();
+  vi.useRealTimers();
+});
+
+test('desktop: the animated space background renders', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.getByTestId('space-bg')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('desktop: a pointerdown/pointerup with no movement in between still lets a double-click open the section', () => {
+  // jsdom/fireEvent doesn't reliably forward clientX/clientY/pointerId into
+  // React's synthetic pointer events, so this only exercises the no-movement
+  // path (no pointerMove fired at all) — the threshold/clamping math itself
+  // is unit-tested directly in dragPosition.test.js instead of simulated here.
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  const icon = screen.getByTestId('desktop-icon-skills');
+  fireEvent.pointerDown(icon, { pointerId: 2 });
+  fireEvent.pointerUp(icon, { pointerId: 2 });
+  fireEvent.doubleClick(icon);
+
+  expect(screen.getByTestId('window-skills')).toBeInTheDocument();
+
+  vi.useRealTimers();
+});
+
+test('desktop: icons restore a previously saved position from localStorage', () => {
+  // jsdom has no window.localStorage, so Desktop's reads/writes are a no-op in
+  // every other test; stub a working in-memory version just for this one
+  const store = { 'fireos-icon-positions': JSON.stringify({ about: { x: 123, y: 45 } }) };
+  window.localStorage = {
+    getItem: (key) => store[key] ?? null,
+    setItem: (key, value) => { store[key] = value; },
+  };
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  const icon = screen.getByTestId('desktop-icon-about');
+  expect(icon.style.left).toBe('123px');
+  expect(icon.style.top).toBe('45px');
+
   vi.useRealTimers();
 });

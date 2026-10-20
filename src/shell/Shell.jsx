@@ -130,6 +130,11 @@ function ShellBody() {
         prompt={shellStrings.prompt}
         hint={shellStrings.hint}
       />
+      {mode === 'desktop' && (
+        <div className="space-bg" data-testid="space-bg" aria-hidden="true">
+          <div className="space-bg__blackhole" />
+        </div>
+      )}
       {mode === 'desktop' && <Desktop items={navItems} onOpen={openSection} />}
       {mode === 'desktop'
         ? windows.map((w) => {

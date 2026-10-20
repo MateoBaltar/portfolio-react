@@ -130,29 +130,133 @@ a:focus-visible {
   border-color: var(--accent);
 }
 
+/* ---------- Space background (desktop view only) ---------- */
+
+.space-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background-color: var(--bg);
+}
+
+.space-bg::before,
+.space-bg::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background-repeat: repeat;
+}
+
+.space-bg::before {
+  background-image: radial-gradient(1.6px 1.6px at 10% 20%, rgba(216, 222, 233, 0.85), transparent),
+    radial-gradient(1.2px 1.2px at 65% 70%, rgba(216, 222, 233, 0.6), transparent),
+    radial-gradient(1.6px 1.6px at 85% 15%, rgba(216, 222, 233, 0.75), transparent),
+    radial-gradient(1.2px 1.2px at 40% 85%, rgba(216, 222, 233, 0.55), transparent),
+    radial-gradient(1.6px 1.6px at 15% 60%, rgba(216, 222, 233, 0.65), transparent),
+    radial-gradient(1.2px 1.2px at 55% 45%, rgba(216, 222, 233, 0.5), transparent);
+  background-size: 280px 280px;
+  animation: star-twinkle-a 7s ease-in-out infinite;
+}
+
+.space-bg::after {
+  background-image: radial-gradient(1px 1px at 25% 40%, rgba(192, 132, 252, 0.6), transparent),
+    radial-gradient(1.3px 1.3px at 75% 25%, rgba(216, 222, 233, 0.6), transparent),
+    radial-gradient(1px 1px at 92% 65%, rgba(216, 222, 233, 0.5), transparent),
+    radial-gradient(1.3px 1.3px at 35% 92%, rgba(192, 132, 252, 0.5), transparent),
+    radial-gradient(1px 1px at 5% 80%, rgba(216, 222, 233, 0.5), transparent);
+  background-size: 360px 360px;
+  animation: star-twinkle-b 9s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.space-bg__blackhole {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 260px;
+  height: 260px;
+  margin: -130px 0 0 -130px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(192, 132, 252, 0.55) 55deg,
+    transparent 130deg,
+    rgba(192, 132, 252, 0.35) 210deg,
+    transparent 290deg,
+    rgba(192, 132, 252, 0.5) 335deg,
+    transparent 360deg
+  );
+  filter: blur(3px);
+  animation: blackhole-spin 48s linear infinite;
+}
+
+.space-bg__blackhole::after {
+  content: '';
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--bg) 0%, var(--bg) 55%, rgba(16, 20, 27, 0) 75%);
+}
+
+@keyframes star-twinkle-a {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes star-twinkle-b {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes blackhole-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .space-bg::before,
+  .space-bg::after,
+  .space-bg__blackhole {
+    animation: none;
+  }
+}
+
 /* ---------- Desktop ---------- */
 
 .desktop {
+  position: relative;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
+  min-height: 320px;
   padding: 24px 16px;
 }
 
 .desktop__icon {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   width: 84px;
   padding: 10px 6px;
-  background: transparent;
+  background: rgba(16, 20, 27, 0.55);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text-dim);
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 
@@ -164,8 +268,7 @@ a:focus-visible {
 }
 
 .desktop__icon-glyph {
-  font-size: 1.4em;
-  font-weight: 600;
+  display: flex;
 }
 
 .desktop__icon-label {
