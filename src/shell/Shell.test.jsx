@@ -1,5 +1,13 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { Shell } from './Shell';
+import { playClick } from './sound';
+
+vi.mock('./sound', () => ({
+  playClick: vi.fn(),
+  playKey: vi.fn(),
+  isMuted: vi.fn(() => false),
+  toggleMute: vi.fn(() => true),
+}));
 
 function skipBoot() {
   act(() => { vi.runAllTimers(); });
@@ -7,6 +15,7 @@ function skipBoot() {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.clearAllMocks();
   // one test swaps in a fake localStorage; reset it so it doesn't leak into later tests
   window.localStorage = undefined;
 });
@@ -42,7 +51,8 @@ test('toggling language re-renders an open section without closing its window', 
   vi.useFakeTimers();
   render(<Shell />);
   skipBoot();
-  // Boot already auto-opens 'about'.
+  // boot auto-opens the terminal, not About, so open About explicitly
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-about'));
   expect(screen.getByText(/Backend-leaning full-stack developer/)).toBeInTheDocument();
   fireEvent.click(screen.getByTestId('lang-toggle'));
   expect(screen.getByTestId('window-about')).toBeInTheDocument();
@@ -62,7 +72,8 @@ test('crossing the desktop/mobile breakpoint keeps the open section visible', ()
   render(<Shell />);
   skipBoot();
 
-  // Boot already auto-opens 'about'.
+  // boot auto-opens the terminal, not About, so open About explicitly
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-about'));
   expect(screen.getByTestId('window-about')).toBeInTheDocument();
 
   act(() => {
@@ -109,14 +120,12 @@ test('desktop: typing "lang es" into the terminal window switches the visible la
   render(<Shell />);
   skipBoot();
 
-  // Boot already auto-opens 'about'.
-  expect(screen.getByText(/Backend-leaning full-stack developer/)).toBeInTheDocument();
-
-  fireEvent.doubleClick(screen.getByTestId('desktop-icon-terminal'));
+  // boot auto-opens the terminal, so type directly with no need to open it first
   const input = screen.getByRole('textbox');
   fireEvent.change(input, { target: { value: 'lang es' } });
   fireEvent.submit(input.closest('form'));
 
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-about'));
   expect(screen.getByText(/Desarrollador full-stack con inclinación backend/)).toBeInTheDocument();
   vi.useRealTimers();
 });
@@ -127,12 +136,23 @@ test('desktop: typing an unknown command into the terminal window shows the not-
   render(<Shell />);
   skipBoot();
 
-  fireEvent.doubleClick(screen.getByTestId('desktop-icon-terminal'));
+  // boot auto-opens the terminal, so type directly with no need to open it first
   const input = screen.getByRole('textbox');
   fireEvent.change(input, { target: { value: 'abuot' } });
   fireEvent.submit(input.closest('form'));
 
   expect(screen.getByText('command not found, try \'help\'')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('desktop: boot auto-opens the terminal window, not About', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.getByTestId('window-terminal')).toBeInTheDocument();
+  expect(screen.queryByTestId('window-about')).toBeNull();
   vi.useRealTimers();
 });
 
@@ -300,20 +320,67 @@ test('desktop: opening the terminal twice focuses the existing window instead of
   vi.useRealTimers();
 });
 
+test('desktop: double-clicking a desktop icon plays a click sound', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-skills'));
+  expect(playClick).toHaveBeenCalled();
+  vi.useRealTimers();
+});
+
+test('desktop: the menu button shows the FireOS mark', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  const button = screen.getByTestId('desktop-menu-button');
+  expect(button.querySelector('img')).toBeTruthy();
+  vi.useRealTimers();
+});
+
+test('desktop: the taskbar shows the FireOS version and a clock reflecting the system time', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-11-19T10:30:00'));
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.getByTestId('taskbar-version')).toHaveTextContent('FireOS v1.0');
+  expect(screen.getByTestId('taskbar-clock')).toHaveTextContent('10:30');
+  vi.useRealTimers();
+});
+
+test('desktop: the sound toggle switches mute state', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  const toggle = screen.getByTestId('sound-toggle');
+  expect(toggle.getAttribute('aria-pressed')).toBe('false');
+  fireEvent.click(toggle);
+  expect(toggle.getAttribute('aria-pressed')).toBe('true');
+  vi.useRealTimers();
+});
+
 test('desktop: clicking an open-window taskbar tab focuses that window', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
   render(<Shell />);
   skipBoot();
 
-  // Boot auto-opened 'about'; opening 'skills' next makes it the focused one.
+  // boot auto-opened 'terminal'; opening 'skills' next makes it the focused one
   fireEvent.doubleClick(screen.getByTestId('desktop-icon-skills'));
-  expect(screen.getByTestId('taskbar-tab-about')).toBeInTheDocument();
+  expect(screen.getByTestId('taskbar-tab-terminal')).toBeInTheDocument();
   expect(screen.getByTestId('taskbar-tab-skills')).toBeInTheDocument();
 
-  fireEvent.click(screen.getByTestId('taskbar-tab-about'));
+  fireEvent.click(screen.getByTestId('taskbar-tab-terminal'));
 
-  expect(screen.getByTestId('window-titlebar-about').className).toMatch(/--focused/);
+  expect(screen.getByTestId('window-titlebar-terminal').className).toMatch(/--focused/);
   expect(screen.getByTestId('window-titlebar-skills').className).not.toMatch(/--focused/);
   vi.useRealTimers();
 });

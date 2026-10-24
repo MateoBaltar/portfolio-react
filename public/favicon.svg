@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>FireOS</title>
+  <defs>
+    <linearGradient id="fo" x1="0" y1="40" x2="0" y2="470" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff3d1f"/>
+      <stop offset="1" stop-color="#ffa02e"/>
+    </linearGradient>
+    <linearGradient id="fi" x1="0" y1="200" x2="0" y2="460" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffc23d"/>
+      <stop offset="1" stop-color="#fff0b0"/>
+    </linearGradient>
+    <clipPath id="tile"><rect x="0" y="0" width="512" height="512" rx="104"/></clipPath>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect width="512" height="512" fill="#14264c"/>
+    <!-- bigger, bolder flame so it survives 16px -->
+    <path fill="url(#fo)" d="
+      M256 30
+      C312 104 420 186 420 316
+      C420 412 350 480 256 480
+      C162 480 92 412 92 316
+      C92 244 126 194 168 158
+      C164 210 182 246 214 262
+      C198 176 218 96 256 30 Z"/>
+    <path fill="url(#fi)" d="
+      M258 200
+      C300 262 346 306 346 372
+      C346 428 306 466 256 466
+      C206 466 166 428 166 374
+      C166 312 218 274 258 200 Z"/>
+    <!-- one simple ridge -->
+    <path fill="#0b1630" d="M0 420 L120 350 L196 400 L330 300 L420 380 L512 340 L512 512 L0 512 Z"/>
+    <path fill="#e6efff" d="M330 300 L362 330 L344 326 L330 340 L314 326 L300 330 Z"/>
+  </g>
+</svg>

@@ -6,6 +6,7 @@ import {
   pixelToNearestCell,
   nearestFreeCell,
 } from './dragPosition';
+import { playClick } from './sound';
 
 const STORAGE_KEY = 'fireos-icon-positions';
 
@@ -127,6 +128,7 @@ export function Desktop({ items, onOpen }) {
     // A completed drag and a double-click are different physical gestures
     // (dblclick requires two quick clicks in roughly the same spot), so no
     // extra guard is needed here beyond the drag-threshold check above.
+    playClick();
     onOpen(id);
   };
 

@@ -99,10 +99,9 @@ function ShellBody() {
         lineDelayMs={400}
         onComplete={() => {
           setBooted(true);
-          // Land on a populated screen right after boot instead of a blank
-          // page — auto-open the about section once so a visitor sees
-          // name/content immediately without having to click or type first.
-          openSection('about');
+          // land on a populated screen right after boot: the terminal on desktop,
+          // About on mobile (which has no windowed terminal to open)
+          openSection(mode === 'desktop' ? 'terminal' : 'about');
         }}
       />
     );

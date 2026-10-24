@@ -170,18 +170,19 @@ a:focus-visible {
   animation-delay: 1.5s;
 }
 
-/* Gargantua-style lensed disk: the ring is a flattened ellipse sitting
-   behind a smaller, vertically-offset dark core, so the ring's top edge
-   peeks through much more than its bottom edge — that peeking-through is
-   the "lensed arc above, thinner band below" look, done with plain
-   layering rather than actual ray-tracing. */
+/* Gargantua-style lensed disk. The ring element is masked into an actual
+   hollow annulus (not a filled ellipse) so it reads as a glowing loop on
+   its own; the solid dark core then sits in front, shifted down slightly,
+   eclipsing most of the bottom of that loop while leaving the top mostly
+   exposed — that's the "lensed arc above, thinner band below" look, done
+   with plain layering and a mask rather than actual ray-tracing. */
 .space-bg__blackhole-ring {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 300px;
-  height: 112px;
-  margin: -56px 0 0 -150px;
+  width: 320px;
+  height: 140px;
+  margin: -70px 0 0 -160px;
   border-radius: 50%;
   background: conic-gradient(
     from 200deg,
@@ -193,7 +194,23 @@ a:focus-visible {
     rgba(192, 132, 252, 0.7) 330deg,
     rgba(216, 222, 233, 0.9) 360deg
   );
-  filter: blur(2.5px);
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 55%,
+    white 62%,
+    white 90%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 55%,
+    white 62%,
+    white 90%,
+    transparent 100%
+  );
+  filter: blur(1.5px);
   animation: blackhole-spin 42s linear infinite;
 }
 
@@ -201,12 +218,12 @@ a:focus-visible {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 190px;
-  height: 64px;
-  margin: -22px 0 0 -95px;
+  width: 80px;
+  height: 80px;
+  margin: -22px 0 0 -40px;
   border-radius: 50%;
   background: var(--bg);
-  box-shadow: 0 0 36px 10px rgba(192, 132, 252, 0.2);
+  box-shadow: 0 0 40px 14px rgba(192, 132, 252, 0.22);
 }
 
 @keyframes star-twinkle-a {
@@ -273,6 +290,9 @@ a:focus-visible {
 }
 
 .desktop-taskbar__menu-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: transparent;
   border: 1px solid var(--border);
   border-radius: 3px;
@@ -280,6 +300,12 @@ a:focus-visible {
   padding: 4px 12px;
   cursor: pointer;
   transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.desktop-taskbar__menu-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .desktop-taskbar__menu-button:hover,
@@ -341,7 +367,15 @@ a:focus-visible {
   border-color: var(--accent);
 }
 
-.desktop-taskbar__lang {
+.desktop-taskbar__tray {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.desktop-taskbar__tray-item {
   background: transparent;
   border: 1px solid var(--border);
   border-radius: 3px;
@@ -351,9 +385,49 @@ a:focus-visible {
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-.desktop-taskbar__lang:hover {
+.desktop-taskbar__tray-item:hover,
+.desktop-taskbar__tray-item[aria-pressed="true"] {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+.desktop-taskbar__sound {
+  display: flex;
+  align-items: center;
+}
+
+.desktop-taskbar__clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+  padding: 0 2px;
+}
+
+.desktop-taskbar__clock-time {
+  font-size: 0.95em;
+  color: var(--text);
+}
+
+.desktop-taskbar__clock-date {
+  font-size: 0.75em;
+  color: var(--text-dim);
+}
+
+.desktop-taskbar__version {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 0.85em;
+  padding-left: 4px;
+  border-left: 1px solid var(--border);
+}
+
+.desktop-taskbar__version-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 .desktop__icon {

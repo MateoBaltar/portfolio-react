@@ -2,6 +2,18 @@ import { useEffect } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { WindowManagerProvider, useWindowManager } from './WindowManagerContext';
 import { Window } from './Window';
+import { playClick } from '../shell/sound';
+
+vi.mock('../shell/sound', () => ({
+  playClick: vi.fn(),
+  playKey: vi.fn(),
+  isMuted: vi.fn(() => false),
+  toggleMute: vi.fn(() => true),
+}));
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 function Harness() {
   const { openWindow } = useWindowManager();
@@ -25,6 +37,16 @@ test('clicking close calls onClose', () => {
   );
   fireEvent.click(screen.getByTestId('window-close-about'));
   expect(onClose).toHaveBeenCalled();
+});
+
+test('clicking close plays a click sound', () => {
+  render(
+    <WindowManagerProvider>
+      <Window id="about" title="About">content</Window>
+    </WindowManagerProvider>
+  );
+  fireEvent.click(screen.getByTestId('window-close-about'));
+  expect(playClick).toHaveBeenCalled();
 });
 
 test('a pointerdown on the close button does not capture the pointer on the title bar', () => {

@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useWindowManager } from './WindowManagerContext';
+import { playClick } from '../shell/sound';
 
 // position: fixed with no explicit size means a window would otherwise
 // shrink-to-fit its content, which compounds the cascade-spawn fix by
@@ -79,6 +80,7 @@ export function Window({ id, title, onClose = () => {}, children }) {
   };
 
   const handleClose = () => {
+    playClick();
     onClose();
     closeWindow(id);
   };

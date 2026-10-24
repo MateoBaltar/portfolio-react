@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { playKey } from './sound';
 
 export function CommandPrompt({
   commandNames,
@@ -52,7 +53,10 @@ export function CommandPrompt({
           role="textbox"
           aria-label={inputLabel}
           value={value}
-          onChange={(event) => setValue(event.target.value)}
+          onChange={(event) => {
+            playKey();
+            setValue(event.target.value);
+          }}
         />
       </form>
     </div>

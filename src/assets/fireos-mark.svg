@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>FireOS</title>
+  <defs>
+    <linearGradient id="fo" x1="0" y1="24" x2="0" y2="484" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff3d1f"/>
+      <stop offset="1" stop-color="#ffa02e"/>
+    </linearGradient>
+    <linearGradient id="fi" x1="0" y1="200" x2="0" y2="470" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffc23d"/>
+      <stop offset="1" stop-color="#fff0b0"/>
+    </linearGradient>
+    <linearGradient id="rock" x1="0" y1="290" x2="0" y2="484" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c2331b"/>
+      <stop offset="1" stop-color="#7d1f12"/>
+    </linearGradient>
+
+    <!-- ridge line shared by everything below -->
+    <clipPath id="above">
+      <path d="M0 0 H512 V430 L452 430 L330 322 L300 340 L262 288 L170 394 L130 372 L60 430 L0 430 Z"/>
+    </clipPath>
+    <clipPath id="below">
+      <path d="M0 512 V430 L60 430 L130 372 L170 394 L262 288 L300 340 L330 322 L452 430 L512 430 V512 Z"/>
+    </clipPath>
+    <!-- thin gap that separates the mountains from the fire -->
+    <mask id="gap" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="#fff"/>
+      <path d="M60 430 L130 372 L170 394 L262 288 L300 340 L330 322 L452 430"
+            fill="none" stroke="#000" stroke-width="20" stroke-linejoin="miter" stroke-miterlimit="10"/>
+    </mask>
+
+    <path id="outer" d="
+      M256 24
+      C312 98 420 182 420 314
+      C420 412 350 484 256 484
+      C162 484 92 412 92 314
+      C92 240 126 190 168 154
+      C164 206 182 242 214 258
+      C198 172 218 92 256 24 Z"/>
+    <path id="inner" d="
+      M258 200
+      C300 262 346 306 346 372
+      C346 428 306 468 256 468
+      C206 468 166 428 166 374
+      C166 312 218 274 258 200 Z"/>
+  </defs>
+
+  <g mask="url(#gap)">
+    <!-- fire, above the ridge -->
+    <g clip-path="url(#above)">
+      <use href="#outer" fill="url(#fo)"/>
+      <use href="#inner" fill="url(#fi)"/>
+    </g>
+    <!-- mountains, carved from the base of the flame -->
+    <g clip-path="url(#below)">
+      <use href="#outer" fill="url(#rock)"/>
+    </g>
+    <!-- snow on the peak -->
+    <path fill="#fff4e0" d="M262 288 L297 336 L276 326 L262 344 L246 326 L220 336 Z"/>
+  </g>
+</svg>
