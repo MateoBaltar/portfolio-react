@@ -6,6 +6,7 @@ import { useViewportMode } from '../hooks/useViewportMode';
 import { BootSequence } from './BootSequence';
 import { CommandPrompt } from './CommandPrompt';
 import { Taskbar } from './Taskbar';
+import { DesktopTaskbar } from './DesktopTaskbar';
 import { Desktop } from './Desktop';
 import { About } from '../sections/About';
 import { Skills } from '../sections/Skills';
@@ -22,27 +23,33 @@ const SECTIONS = {
 };
 
 const SECTION_IDS = Object.keys(SECTIONS);
+// Desktop mode adds one more openable "app" beyond the five content
+// sections: the terminal itself now lives inside its own window instead of
+// being permanently docked, so it needs a place in the icon grid/start menu.
+const DESKTOP_ITEM_IDS = [...SECTION_IDS, 'terminal'];
 
 const LANG_CODES = ['en', 'es'];
 
 function ShellBody() {
-  const { t, setLang } = useLanguage();
+  const { lang, t, setLang } = useLanguage();
   const mode = useViewportMode();
-  const { windows, openWindow } = useWindowManager();
+  const { windows, openWindow, focusWindow } = useWindowManager();
   const [booted, setBooted] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
-  // Tracks the most recently opened section independent of viewport mode,
-  // without itself triggering a re-render. Mobile nav/command clicks only
-  // ever touch this ref + activeSection — they never write to `windows` —
-  // so navigating several sections on mobile never accumulates a backlog of
-  // window records.
+  // last section opened, independent of viewport mode; doesn't trigger a re-render
   const lastSectionRef = useRef(null);
 
   const shellStrings = t('shell');
   const navLabels = t('nav');
 
-  const navItems = useMemo(
+  const sectionNavItems = useMemo(
     () => SECTION_IDS.map((id) => ({ id, label: navLabels[id] })),
+    [navLabels]
+  );
+
+  // icon grid and start-menu popup both list every openable item including the terminal
+  const desktopItems = useMemo(
+    () => DESKTOP_ITEM_IDS.map((id) => ({ id, label: navLabels[id] })),
     [navLabels]
   );
 
@@ -55,12 +62,18 @@ function ShellBody() {
     }
   };
 
-  // Catch up the *other* branch's state only when the viewport mode itself
-  // actually changes, using whatever was last explicitly opened via
-  // nav/command — never the full history of sections visited in the other
-  // mode. This keeps "exactly one window on desktop" and "no window writes
-  // on mobile" both true, while still surfacing the last-viewed section
-  // across the breakpoint in either direction.
+  const handleCommand = (name, args) => {
+    if (name === 'lang') {
+      if (LANG_CODES.includes(args[0])) {
+        setLang(args[0]);
+      }
+      return;
+    }
+    openSection(name);
+  };
+
+  // re-sync the other viewport mode's state when the mode itself changes, using
+  // whatever was last opened, so the last-viewed section survives the breakpoint
   useEffect(() => {
     const last = lastSectionRef.current;
     if (!last) {
@@ -71,13 +84,12 @@ function ShellBody() {
       if (!alreadyOpen) {
         openWindow(last.id, last.label);
       }
-    } else if (activeSection === null) {
+    } else if (activeSection === null && last.id !== 'terminal') {
+      // mobile has no stacked-section view for the terminal, so there's nothing to
+      // resurrect it as; leave the stacked view empty instead
       setActiveSection(last.id);
     }
-    // Intentionally omitted from deps: this effect reacts only to `mode`
-    // changes. `windows`/`activeSection` change as a result of this effect's
-    // own catch-up calls, and `openWindow`/`setActiveSection` are stable
-    // setters, so including them would cause unwanted re-runs.
+    // reacts only to mode changes, see comment above
   }, [mode]);
 
   if (!booted) {
@@ -96,69 +108,88 @@ function ShellBody() {
     );
   }
 
-  const openWindowIds =
-    mode === 'desktop' ? windows.map((w) => w.id) : activeSection ? [activeSection] : [];
+  if (mode === 'desktop') {
+    const activeId =
+      windows.reduce((top, w) => (!top || w.zIndex > top.zIndex ? w : top), null)?.id ?? null;
 
-  const activeId =
-    mode === 'desktop'
-      ? windows.reduce((top, w) => (!top || w.zIndex > top.zIndex ? w : top), null)?.id ?? null
-      : activeSection;
+    const openWindows = windows.map((w) => ({
+      id: w.id,
+      label: navLabels[w.id] ?? w.title,
+    }));
+
+    return (
+      <div className="shell">
+        <div className="space-bg" data-testid="space-bg" aria-hidden="true">
+          <div className="space-bg__blackhole-ring" />
+          <div className="space-bg__blackhole-core" />
+        </div>
+        <Desktop items={desktopItems} onOpen={openSection} />
+        {windows.map((w) => {
+          const isTerminal = w.id === 'terminal';
+          const SectionComponent = isTerminal ? null : SECTIONS[w.id];
+          return (
+            <Window
+              key={w.id}
+              id={w.id}
+              title={navLabels[w.id] ?? w.title}
+              onClose={() => {
+                if (lastSectionRef.current?.id === w.id) {
+                  lastSectionRef.current = null;
+                }
+              }}
+            >
+              {isTerminal ? (
+                <CommandPrompt
+                  commandNames={[...SECTION_IDS, 'lang']}
+                  onCommand={handleCommand}
+                  notFoundMessage={shellStrings.commandNotFound}
+                  helpIntro={shellStrings.helpIntro}
+                  prompt={shellStrings.prompt}
+                  hint={shellStrings.hint}
+                />
+              ) : (
+                <SectionComponent />
+              )}
+            </Window>
+          );
+        })}
+        <DesktopTaskbar
+          menuLabel={shellStrings.menuLabel}
+          menuItems={desktopItems}
+          openWindows={openWindows}
+          activeId={activeId}
+          onOpen={openSection}
+          onFocus={focusWindow}
+          lang={lang}
+          setLang={setLang}
+        />
+      </div>
+    );
+  }
 
   const ActiveMobileSection = activeSection ? SECTIONS[activeSection] : null;
 
   return (
     <div className="shell">
       <Taskbar
-        navItems={navItems}
-        openWindowIds={openWindowIds}
-        activeId={activeId}
+        navItems={sectionNavItems}
+        openWindowIds={activeSection ? [activeSection] : []}
+        activeId={activeSection}
         onNavClick={openSection}
       />
       <CommandPrompt
         commandNames={[...SECTION_IDS, 'lang']}
-        onCommand={(name, args) => {
-          if (name === 'lang') {
-            if (LANG_CODES.includes(args[0])) {
-              setLang(args[0]);
-            }
-            return;
-          }
-          openSection(name);
-        }}
+        onCommand={handleCommand}
         notFoundMessage={shellStrings.commandNotFound}
         helpIntro={shellStrings.helpIntro}
         prompt={shellStrings.prompt}
         hint={shellStrings.hint}
       />
-      {mode === 'desktop' && (
-        <div className="space-bg" data-testid="space-bg" aria-hidden="true">
-          <div className="space-bg__blackhole" />
+      {ActiveMobileSection && (
+        <div className="section-page" data-testid={`section-${activeSection}`}>
+          <ActiveMobileSection />
         </div>
       )}
-      {mode === 'desktop' && <Desktop items={navItems} onOpen={openSection} />}
-      {mode === 'desktop'
-        ? windows.map((w) => {
-            const SectionComponent = SECTIONS[w.id];
-            return (
-              <Window
-                key={w.id}
-                id={w.id}
-                title={navLabels[w.id] ?? w.title}
-                onClose={() => {
-                  if (lastSectionRef.current?.id === w.id) {
-                    lastSectionRef.current = null;
-                  }
-                }}
-              >
-                <SectionComponent />
-              </Window>
-            );
-          })
-        : ActiveMobileSection && (
-            <div className="section-page" data-testid={`section-${activeSection}`}>
-              <ActiveMobileSection />
-            </div>
-          )}
     </div>
   );
 }

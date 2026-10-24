@@ -1,50 +1,64 @@
 import { useMemo, useRef, useState } from 'react';
 import { DESKTOP_ICONS } from './desktopIcons';
-import { ICON_HEIGHT, resolveDragPosition } from './dragPosition';
+import {
+  resolveDragPosition,
+  cellToPixel,
+  pixelToNearestCell,
+  nearestFreeCell,
+} from './dragPosition';
 
 const STORAGE_KEY = 'fireos-icon-positions';
-const COLUMN_X = 20;
-const ROW_STEP = ICON_HEIGHT + 14;
-const ROW_START = 20;
 
-function loadPositions() {
+function loadCells() {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
+    const parsed = raw ? JSON.parse(raw) : {};
+    // only accept values that look like grid cells, ignore anything malformed or stale
+    const result = {};
+    Object.entries(parsed).forEach(([id, value]) => {
+      if (value && typeof value.col === 'number' && typeof value.row === 'number') {
+        result[id] = { col: value.col, row: value.row };
+      }
+    });
+    return result;
   } catch {
     // localStorage may be unavailable (blocked storage, privacy mode, etc.)
     return {};
   }
 }
 
-function savePositions(positions) {
+function saveCells(cells) {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cells));
   } catch {
     // storage may be blocked, icon positions just won't persist
   }
 }
 
-function defaultPosition(index) {
-  return { x: COLUMN_X, y: ROW_START + index * ROW_STEP };
+function defaultCell(index) {
+  return { col: 0, row: index };
 }
 
 export function Desktop({ items, onOpen }) {
   const containerRef = useRef(null);
   const dragStateRef = useRef(null);
-  const [positions, setPositions] = useState(loadPositions);
+  const [cells, setCells] = useState(loadCells);
+  // Free-pixel position of whichever icon is mid-drag, so it tracks the
+  // pointer smoothly; only resolved back to a grid cell on release.
+  const [liveDrag, setLiveDrag] = useState(null);
 
-  const effectivePositions = useMemo(() => {
+  const effectiveCells = useMemo(() => {
     const result = {};
     items.forEach((item, index) => {
-      result[item.id] = positions[item.id] ?? defaultPosition(index);
+      result[item.id] = cells[item.id] ?? defaultCell(index);
     });
     return result;
-  }, [items, positions]);
+  }, [items, cells]);
 
   const handlePointerDown = (id) => (event) => {
     const containerRect = containerRef.current?.getBoundingClientRect();
-    const origin = effectivePositions[id];
+    const originCell = effectiveCells[id];
+    const origin = cellToPixel(originCell.col, originCell.row);
     dragStateRef.current = {
       id,
       pointerId: event.pointerId,
@@ -76,7 +90,7 @@ export function Desktop({ items, onOpen }) {
       return;
     }
     dragState.dragging = true;
-    setPositions((current) => ({ ...current, [id]: next }));
+    setLiveDrag({ id, x: next.x, y: next.y });
   };
 
   const handlePointerUp = (id) => (event) => {
@@ -84,9 +98,28 @@ export function Desktop({ items, onOpen }) {
     if (!dragState || dragState.id !== id || dragState.pointerId !== event.pointerId) {
       return;
     }
-    if (dragState.dragging) {
-      savePositions(positions);
+    if (dragState.dragging && liveDrag) {
+      const nearest = pixelToNearestCell(
+        liveDrag.x,
+        liveDrag.y,
+        dragState.containerWidth,
+        dragState.containerHeight
+      );
+      const occupied = Object.entries(effectiveCells)
+        .filter(([otherId]) => otherId !== id)
+        .map(([, cell]) => cell);
+      const cell = nearestFreeCell(
+        nearest.col,
+        nearest.row,
+        occupied,
+        dragState.containerWidth,
+        dragState.containerHeight
+      );
+      const nextCells = { ...effectiveCells, [id]: cell };
+      saveCells(nextCells);
+      setCells(nextCells);
     }
+    setLiveDrag(null);
     dragStateRef.current = null;
   };
 
@@ -101,7 +134,11 @@ export function Desktop({ items, onOpen }) {
     <div className="desktop" ref={containerRef}>
       {items.map((item) => {
         const Icon = DESKTOP_ICONS[item.id];
-        const pos = effectivePositions[item.id];
+        const cell = effectiveCells[item.id];
+        const pos =
+          liveDrag && liveDrag.id === item.id
+            ? { x: liveDrag.x, y: liveDrag.y }
+            : cellToPixel(cell.col, cell.row);
         return (
           <button
             key={item.id}

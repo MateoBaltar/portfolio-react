@@ -11,14 +11,18 @@ afterEach(() => {
   window.localStorage = undefined;
 });
 
-test('desktop: clicking a nav item twice opens exactly one focused window', () => {
+test('desktop: opening the same item twice via the start menu opens exactly one focused window', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
   render(<Shell />);
   skipBoot();
-  fireEvent.click(screen.getByTestId('nav-about'));
-  fireEvent.click(screen.getByTestId('nav-about'));
-  expect(screen.getAllByTestId('window-about')).toHaveLength(1);
+
+  fireEvent.click(screen.getByTestId('desktop-menu-button'));
+  fireEvent.click(screen.getByTestId('desktop-menu-item-skills'));
+  fireEvent.click(screen.getByTestId('desktop-menu-button'));
+  fireEvent.click(screen.getByTestId('desktop-menu-item-skills'));
+
+  expect(screen.getAllByTestId('window-skills')).toHaveLength(1);
   vi.useRealTimers();
 });
 
@@ -38,7 +42,7 @@ test('toggling language re-renders an open section without closing its window', 
   vi.useFakeTimers();
   render(<Shell />);
   skipBoot();
-  fireEvent.click(screen.getByTestId('nav-about'));
+  // Boot already auto-opens 'about'.
   expect(screen.getByText(/Backend-leaning full-stack developer/)).toBeInTheDocument();
   fireEvent.click(screen.getByTestId('lang-toggle'));
   expect(screen.getByTestId('window-about')).toBeInTheDocument();
@@ -58,7 +62,7 @@ test('crossing the desktop/mobile breakpoint keeps the open section visible', ()
   render(<Shell />);
   skipBoot();
 
-  fireEvent.click(screen.getByTestId('nav-about'));
+  // Boot already auto-opens 'about'.
   expect(screen.getByTestId('window-about')).toBeInTheDocument();
 
   act(() => {
@@ -99,14 +103,16 @@ test('navigating several sections on mobile then crossing to desktop opens only 
   vi.useRealTimers();
 });
 
-test('typing "lang es" into the real command prompt switches the visible language', () => {
+test('desktop: typing "lang es" into the terminal window switches the visible language', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
   render(<Shell />);
   skipBoot();
 
+  // Boot already auto-opens 'about'.
   expect(screen.getByText(/Backend-leaning full-stack developer/)).toBeInTheDocument();
 
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-terminal'));
   const input = screen.getByRole('textbox');
   fireEvent.change(input, { target: { value: 'lang es' } });
   fireEvent.submit(input.closest('form'));
@@ -115,8 +121,23 @@ test('typing "lang es" into the real command prompt switches the visible languag
   vi.useRealTimers();
 });
 
-test('typing an unknown command into the real command prompt shows the not-found message', () => {
+test('desktop: typing an unknown command into the terminal window shows the not-found message', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-terminal'));
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'abuot' } });
+  fireEvent.submit(input.closest('form'));
+
+  expect(screen.getByText('command not found, try \'help\'')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('mobile: typing an unknown command into the real command prompt shows the not-found message', () => {
+  window.matchMedia = () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
   render(<Shell />);
   skipBoot();
@@ -129,7 +150,7 @@ test('typing an unknown command into the real command prompt shows the not-found
   vi.useRealTimers();
 });
 
-test('desktop: double-clicking a desktop icon opens its section, same as the matching nav button', () => {
+test('desktop: double-clicking a desktop icon opens its section', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
   render(<Shell />);
@@ -172,10 +193,9 @@ test('desktop: the animated space background renders', () => {
 });
 
 test('desktop: a pointerdown/pointerup with no movement in between still lets a double-click open the section', () => {
-  // jsdom/fireEvent doesn't reliably forward clientX/clientY/pointerId into
-  // React's synthetic pointer events, so this only exercises the no-movement
-  // path (no pointerMove fired at all) — the threshold/clamping math itself
-  // is unit-tested directly in dragPosition.test.js instead of simulated here.
+  // jsdom doesn't reliably forward clientX/clientY/pointerId into React's synthetic
+  // pointer events, so this only covers the no-movement path; the drag math itself
+  // is unit-tested directly in dragPosition.test.js
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
   render(<Shell />);
@@ -191,10 +211,10 @@ test('desktop: a pointerdown/pointerup with no movement in between still lets a 
   vi.useRealTimers();
 });
 
-test('desktop: icons restore a previously saved position from localStorage', () => {
+test('desktop: icons restore a previously saved grid position from localStorage', () => {
   // jsdom has no window.localStorage, so Desktop's reads/writes are a no-op in
   // every other test; stub a working in-memory version just for this one
-  const store = { 'fireos-icon-positions': JSON.stringify({ about: { x: 123, y: 45 } }) };
+  const store = { 'fireos-icon-positions': JSON.stringify({ about: { col: 1, row: 2 } }) };
   window.localStorage = {
     getItem: (key) => store[key] ?? null,
     setItem: (key, value) => { store[key] = value; },
@@ -205,8 +225,95 @@ test('desktop: icons restore a previously saved position from localStorage', () 
   skipBoot();
 
   const icon = screen.getByTestId('desktop-icon-about');
-  expect(icon.style.left).toBe('123px');
-  expect(icon.style.top).toBe('45px');
+  // GRID_ORIGIN_X=16 + col(1)*GRID_CELL_WIDTH(112) = 128; GRID_ORIGIN_Y=16 + row(2)*GRID_CELL_HEIGHT(132) = 280.
+  expect(icon.style.left).toBe('128px');
+  expect(icon.style.top).toBe('280px');
 
+  vi.useRealTimers();
+});
+
+test('desktop: the old flat nav bar is not rendered, the start menu is used instead', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.queryByTestId('nav-about')).toBeNull();
+  expect(screen.getByTestId('desktop-menu-button')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('mobile: the desktop taskbar/start-menu is not rendered, the flat nav bar is kept', () => {
+  window.matchMedia = () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.queryByTestId('desktop-menu-button')).toBeNull();
+  expect(screen.getByTestId('nav-about')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('desktop: the start menu lists every section plus the terminal, and closes on an outside click', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  fireEvent.click(screen.getByTestId('desktop-menu-button'));
+  expect(screen.getByTestId('desktop-menu-popup')).toBeInTheDocument();
+  expect(screen.getByTestId('desktop-menu-item-about')).toBeInTheDocument();
+  expect(screen.getByTestId('desktop-menu-item-skills')).toBeInTheDocument();
+  expect(screen.getByTestId('desktop-menu-item-experience')).toBeInTheDocument();
+  expect(screen.getByTestId('desktop-menu-item-projects')).toBeInTheDocument();
+  expect(screen.getByTestId('desktop-menu-item-contact')).toBeInTheDocument();
+  expect(screen.getByTestId('desktop-menu-item-terminal')).toBeInTheDocument();
+
+  fireEvent.pointerDown(document.body);
+  expect(screen.queryByTestId('desktop-menu-popup')).toBeNull();
+  vi.useRealTimers();
+});
+
+test('desktop: pressing Escape closes the start menu', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  fireEvent.click(screen.getByTestId('desktop-menu-button'));
+  expect(screen.getByTestId('desktop-menu-popup')).toBeInTheDocument();
+  fireEvent.keyDown(document, { key: 'Escape' });
+  expect(screen.queryByTestId('desktop-menu-popup')).toBeNull();
+  vi.useRealTimers();
+});
+
+test('desktop: opening the terminal twice focuses the existing window instead of duplicating it', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-terminal'));
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-terminal'));
+
+  expect(screen.getAllByTestId('window-terminal')).toHaveLength(1);
+  vi.useRealTimers();
+});
+
+test('desktop: clicking an open-window taskbar tab focuses that window', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  // Boot auto-opened 'about'; opening 'skills' next makes it the focused one.
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-skills'));
+  expect(screen.getByTestId('taskbar-tab-about')).toBeInTheDocument();
+  expect(screen.getByTestId('taskbar-tab-skills')).toBeInTheDocument();
+
+  fireEvent.click(screen.getByTestId('taskbar-tab-about'));
+
+  expect(screen.getByTestId('window-titlebar-about').className).toMatch(/--focused/);
+  expect(screen.getByTestId('window-titlebar-skills').className).not.toMatch(/--focused/);
   vi.useRealTimers();
 });

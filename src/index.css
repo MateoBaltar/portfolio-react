@@ -170,34 +170,43 @@ a:focus-visible {
   animation-delay: 1.5s;
 }
 
-.space-bg__blackhole {
+/* Gargantua-style lensed disk: the ring is a flattened ellipse sitting
+   behind a smaller, vertically-offset dark core, so the ring's top edge
+   peeks through much more than its bottom edge — that peeking-through is
+   the "lensed arc above, thinner band below" look, done with plain
+   layering rather than actual ray-tracing. */
+.space-bg__blackhole-ring {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 260px;
-  height: 260px;
-  margin: -130px 0 0 -130px;
+  width: 300px;
+  height: 112px;
+  margin: -56px 0 0 -150px;
   border-radius: 50%;
   background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    rgba(192, 132, 252, 0.55) 55deg,
-    transparent 130deg,
-    rgba(192, 132, 252, 0.35) 210deg,
-    transparent 290deg,
-    rgba(192, 132, 252, 0.5) 335deg,
-    transparent 360deg
+    from 200deg,
+    rgba(216, 222, 233, 0.9) 0deg,
+    rgba(192, 132, 252, 0.75) 60deg,
+    rgba(192, 132, 252, 0.35) 140deg,
+    rgba(90, 60, 130, 0.18) 200deg,
+    rgba(192, 132, 252, 0.3) 260deg,
+    rgba(192, 132, 252, 0.7) 330deg,
+    rgba(216, 222, 233, 0.9) 360deg
   );
-  filter: blur(3px);
-  animation: blackhole-spin 48s linear infinite;
+  filter: blur(2.5px);
+  animation: blackhole-spin 42s linear infinite;
 }
 
-.space-bg__blackhole::after {
-  content: '';
+.space-bg__blackhole-core {
   position: absolute;
-  inset: 22%;
+  top: 50%;
+  left: 50%;
+  width: 190px;
+  height: 64px;
+  margin: -22px 0 0 -95px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--bg) 0%, var(--bg) 55%, rgba(16, 20, 27, 0) 75%);
+  background: var(--bg);
+  box-shadow: 0 0 36px 10px rgba(192, 132, 252, 0.2);
 }
 
 @keyframes star-twinkle-a {
@@ -229,7 +238,7 @@ a:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .space-bg::before,
   .space-bg::after,
-  .space-bg__blackhole {
+  .space-bg__blackhole-ring {
     animation: none;
   }
 }
@@ -240,7 +249,111 @@ a:focus-visible {
   position: relative;
   flex: 1;
   min-height: 320px;
-  padding: 24px 16px;
+  padding: 24px 16px 64px;
+}
+
+/* ---------- Desktop taskbar (bottom bar, desktop view only) ---------- */
+
+.desktop-taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.desktop-taskbar__menu-wrap {
+  position: relative;
+}
+
+.desktop-taskbar__menu-button {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.desktop-taskbar__menu-button:hover,
+.desktop-taskbar__menu-button[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.desktop-taskbar__popup {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.desktop-taskbar__popup-item {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  text-align: left;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.desktop-taskbar__popup-item:hover,
+.desktop-taskbar__popup-item:focus-visible {
+  color: var(--accent);
+  background: var(--surface);
+  outline: none;
+}
+
+.desktop-taskbar__tabs {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.desktop-taskbar__tab {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.desktop-taskbar__tab[aria-pressed="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.desktop-taskbar__lang {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+  padding: 3px 9px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.desktop-taskbar__lang:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .desktop__icon {
@@ -281,6 +394,13 @@ a:focus-visible {
 .prompt {
   padding: 10px 16px 14px;
   border-bottom: 1px solid var(--border);
+}
+
+/* Nested inside a window body (the terminal is a window on desktop), the
+   body already supplies padding and there's nothing below to rule off. */
+.window__body .prompt {
+  padding: 0;
+  border-bottom: none;
 }
 
 .prompt__log {

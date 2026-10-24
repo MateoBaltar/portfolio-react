@@ -1,16 +1,15 @@
-function IconBase({ children }) {
+const STROKE = {
+  stroke: 'currentColor',
+  strokeWidth: 1.6,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  fill: 'none',
+};
+
+function IconFrame({ children }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      width="26"
-      height="26"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+      <rect x="1" y="1" width="22" height="22" rx="5" fill="currentColor" fillOpacity="0.12" />
       {children}
     </svg>
   );
@@ -18,45 +17,65 @@ function IconBase({ children }) {
 
 function AboutIcon() {
   return (
-    <IconBase>
-      <circle cx="12" cy="8" r="3.2" />
-      <path d="M5.5 19.5c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" />
-    </IconBase>
+    <IconFrame>
+      <circle cx="12" cy="9.2" r="3" {...STROKE} />
+      <path d="M6 18.3c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" {...STROKE} />
+      <circle cx="12" cy="9.2" r="1" fill="currentColor" fillOpacity="0.5" />
+    </IconFrame>
   );
 }
 
 function SkillsIcon() {
   return (
-    <IconBase>
-      <path d="M14.7 6.3a3.2 3.2 0 0 0-4.3 3.9L5 15.6v3.1h3.1l5.4-5.4a3.2 3.2 0 0 0 3.9-4.3l-2.4 2.4-1.7-1.7Z" />
-    </IconBase>
+    <IconFrame>
+      <path
+        d="M14.3 6.7a3 3 0 0 0-4 3.6L5.5 15.1v2.9h2.9l4.8-4.8a3 3 0 0 0 3.6-4l-2.2 2.2-1.6-1.6Z"
+        {...STROKE}
+      />
+      <circle cx="9.3" cy="14.7" r="0.9" fill="currentColor" />
+    </IconFrame>
   );
 }
 
 function ExperienceIcon() {
   return (
-    <IconBase>
-      <rect x="3.5" y="8" width="17" height="11" rx="1.5" />
-      <path d="M8.5 8V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2" />
-      <path d="M3.5 13h17" />
-    </IconBase>
+    <IconFrame>
+      <rect x="4" y="8.5" width="16" height="10" rx="1.4" {...STROKE} />
+      <path d="M9 8.5V6.8a1.8 1.8 0 0 1 1.8-1.8h2.4a1.8 1.8 0 0 1 1.8 1.8v1.7" {...STROKE} />
+      <rect x="10.6" y="12" width="2.8" height="2" rx="0.5" fill="currentColor" />
+    </IconFrame>
   );
 }
 
 function ProjectsIcon() {
   return (
-    <IconBase>
-      <path d="M3.5 7.5a1.5 1.5 0 0 1 1.5-1.5h4l1.6 2H19a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5Z" />
-    </IconBase>
+    <IconFrame>
+      <path
+        d="M4 8a1.4 1.4 0 0 1 1.4-1.4h3.6l1.5 1.8h8.1A1.4 1.4 0 0 1 20 9.8v7.3A1.4 1.4 0 0 1 18.6 18.5H5.4A1.4 1.4 0 0 1 4 17.1Z"
+        {...STROKE}
+      />
+      <rect x="5.4" y="10.3" width="4.4" height="1.6" rx="0.6" fill="currentColor" fillOpacity="0.5" />
+    </IconFrame>
   );
 }
 
 function ContactIcon() {
   return (
-    <IconBase>
-      <rect x="3.5" y="5.5" width="17" height="13" rx="1.5" />
-      <path d="M4 6.5 12 13l8-6.5" />
-    </IconBase>
+    <IconFrame>
+      <rect x="4" y="6" width="16" height="12" rx="1.4" {...STROKE} />
+      <path d="M4.6 7 12 12.6 19.4 7" {...STROKE} />
+      <circle cx="17.3" cy="15.3" r="1" fill="currentColor" />
+    </IconFrame>
+  );
+}
+
+function TerminalIcon() {
+  return (
+    <IconFrame>
+      <rect x="4" y="5.5" width="16" height="13" rx="1.6" {...STROKE} />
+      <path d="M7.3 9.5l2.6 2.6-2.6 2.6" {...STROKE} />
+      <path d="M12.3 14.7h4.3" {...STROKE} />
+    </IconFrame>
   );
 }
 
@@ -66,4 +85,5 @@ export const DESKTOP_ICONS = {
   experience: ExperienceIcon,
   projects: ProjectsIcon,
   contact: ContactIcon,
+  terminal: TerminalIcon,
 };

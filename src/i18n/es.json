@@ -1,11 +1,12 @@
 {
-  "nav": { "about": "Sobre mí", "skills": "Habilidades", "experience": "Experiencia", "projects": "Proyectos", "contact": "Contacto" },
+  "nav": { "about": "Sobre mí", "skills": "Habilidades", "experience": "Experiencia", "projects": "Proyectos", "contact": "Contacto", "terminal": "Terminal" },
   "shell": {
     "bootLines": ["Iniciando FireOS v1.0...", "Cargando perfil: Mateo Baltar", "Montando /experiencia ...", "Montando /habilidades ...", "Montando /proyectos ...", "Listo."],
     "prompt": "invitado@fireos:~$",
     "helpIntro": "Comandos disponibles:",
     "commandNotFound": "comando no encontrado, prueba 'help'",
-    "hint": "Escribe 'help' para ver los comandos disponibles."
+    "hint": "Escribe 'help' para ver los comandos disponibles.",
+    "menuLabel": "Menú"
   },
   "about": {
     "title": "Sobre mí",
