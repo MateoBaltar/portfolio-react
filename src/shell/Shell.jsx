@@ -119,6 +119,10 @@ function ShellBody() {
     return (
       <div className="shell">
         <div className="space-bg" data-testid="space-bg" aria-hidden="true">
+          <div className="space-bg__star space-bg__star--1" />
+          <div className="space-bg__star space-bg__star--2" />
+          <div className="space-bg__star space-bg__star--3" />
+          <div className="space-bg__star space-bg__star--4" />
           <div className="space-bg__blackhole-core" />
           <div className="space-bg__blackhole-halo" />
         </div>

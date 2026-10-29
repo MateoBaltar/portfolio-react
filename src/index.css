@@ -177,24 +177,24 @@ a:focus-visible {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 150px;
-  height: 150px;
-  margin: -75px 0 0 -75px;
+  width: 450px;
+  height: 450px;
+  margin: -225px 0 0 -225px;
   border-radius: 50%;
   background: var(--bg);
   box-shadow:
-    0 0 10px 3px rgba(192, 132, 252, 0.65),
-    0 0 26px 9px rgba(192, 132, 252, 0.32),
-    0 0 52px 18px rgba(192, 132, 252, 0.14);
+    0 0 30px 10px rgba(192, 132, 252, 0.65),
+    0 0 78px 28px rgba(192, 132, 252, 0.32),
+    0 0 156px 54px rgba(192, 132, 252, 0.14);
 }
 
 .space-bg__blackhole-halo {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 420px;
-  height: 90px;
-  margin: -45px 0 0 -210px;
+  width: 1260px;
+  height: 270px;
+  margin: -135px 0 0 -630px;
   border-radius: 50%;
   background: radial-gradient(
     ellipse at center,
@@ -203,7 +203,7 @@ a:focus-visible {
     rgba(192, 132, 252, 0.16) 55%,
     transparent 78%
   );
-  filter: blur(7px);
+  filter: blur(20px);
   transform: rotate(-24deg);
   animation: halo-breathe 6s ease-in-out infinite;
 }
@@ -218,9 +218,80 @@ a:focus-visible {
   }
 }
 
+/* shooting stars: a short streak darts across and fades, then sits idle for
+   most of a long, staggered cycle so the four don't fire in sync */
+.space-bg__star {
+  position: absolute;
+  width: 110px;
+  height: 2px;
+  background: linear-gradient(
+    270deg,
+    rgba(216, 222, 233, 0.95),
+    rgba(192, 132, 252, 0.5) 40%,
+    transparent 100%
+  );
+  border-radius: 999px;
+  opacity: 0;
+  animation: shooting-star 9s linear infinite;
+}
+
+.space-bg__star--1 {
+  top: 12%;
+  left: 8%;
+  transform: rotate(18deg);
+  animation-duration: 8s;
+  animation-delay: 0.5s;
+}
+
+.space-bg__star--2 {
+  top: 55%;
+  left: 70%;
+  transform: rotate(18deg);
+  animation-duration: 11s;
+  animation-delay: 3.5s;
+}
+
+.space-bg__star--3 {
+  top: 8%;
+  left: 60%;
+  transform: rotate(18deg);
+  animation-duration: 13s;
+  animation-delay: 6.5s;
+}
+
+.space-bg__star--4 {
+  top: 70%;
+  left: 20%;
+  transform: rotate(18deg);
+  animation-duration: 10s;
+  animation-delay: 1.5s;
+}
+
+@keyframes shooting-star {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0;
+    translate: 260px 85px;
+  }
+  100% {
+    opacity: 0;
+    translate: 260px 85px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .space-bg__blackhole-halo {
     animation: none;
+  }
+
+  .space-bg__star {
+    display: none;
   }
 }
 
