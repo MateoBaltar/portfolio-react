@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { WindowManagerProvider, useWindowManager } from './WindowManagerContext';
 import { Window } from './Window';
 import { playClick } from '../shell/sound';
@@ -28,7 +28,54 @@ test('double-clicking the title bar toggles fullscreen', () => {
   expect(screen.getByTestId('window-about').dataset.fullscreen).toBe('true');
 });
 
-test('clicking close calls onClose', () => {
+test('clicking close calls onClose after the exit animation delay', () => {
+  vi.useFakeTimers();
+  const onClose = vi.fn();
+  render(
+    <WindowManagerProvider>
+      <Window id="about" title="About" onClose={onClose}>content</Window>
+    </WindowManagerProvider>
+  );
+  fireEvent.click(screen.getByTestId('window-close-about'));
+  expect(onClose).not.toHaveBeenCalled();
+  act(() => {
+    vi.advanceTimersByTime(160);
+  });
+  expect(onClose).toHaveBeenCalled();
+  vi.useRealTimers();
+});
+
+test('the window stays mounted mid-exit-animation and is removed once it finishes', () => {
+  vi.useFakeTimers();
+  function Harness2() {
+    const { openWindow, windows } = useWindowManager();
+    useEffect(() => openWindow('about', 'About'), []);
+    if (!windows.find((w) => w.id === 'about')) {
+      return null;
+    }
+    return (
+      <Window id="about" title="About">
+        content
+      </Window>
+    );
+  }
+  render(
+    <WindowManagerProvider>
+      <Harness2 />
+    </WindowManagerProvider>
+  );
+  fireEvent.click(screen.getByTestId('window-close-about'));
+  expect(screen.getByTestId('window-about')).toBeInTheDocument();
+  act(() => {
+    vi.advanceTimersByTime(160);
+  });
+  expect(screen.queryByTestId('window-about')).toBeNull();
+  vi.useRealTimers();
+});
+
+test('closing is instant when the user prefers reduced motion', () => {
+  const originalMatchMedia = window.matchMedia;
+  window.matchMedia = () => ({ matches: true });
   const onClose = vi.fn();
   render(
     <WindowManagerProvider>
@@ -37,6 +84,7 @@ test('clicking close calls onClose', () => {
   );
   fireEvent.click(screen.getByTestId('window-close-about'));
   expect(onClose).toHaveBeenCalled();
+  window.matchMedia = originalMatchMedia;
 });
 
 test('clicking close plays a click sound', () => {

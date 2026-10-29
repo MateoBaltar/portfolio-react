@@ -1,7 +1,7 @@
 import { useLanguage } from '../i18n/LanguageContext';
 
 export function Experience() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const experience = t('experience');
 
   return (
@@ -52,7 +52,7 @@ export function Experience() {
         ))}
       </ul>
 
-      <a className="experience__cv-link" href="/curriculum.pdf">
+      <a className="experience__cv-link" href={`/curriculum-${lang}.pdf`}>
         {experience.downloadCv}
       </a>
     </section>

@@ -10,30 +10,30 @@
   },
   "about": {
     "title": "Sobre mí",
-    "summary": "Desarrollador full-stack con inclinación backend, con dos años y medio de experiencia. La mayor parte de ese tiempo lo dediqué a trabajar con Python, PostgreSQL y JavaScript dentro de Odoo, un gran ERP de código abierto, para clientes fuera de Argentina. El día a día implica lógica de negocio en Python, modelos de datos a través del ORM, componentes de frontend en OWL y QWeb, y la integración de sistemas mediante REST y XML-RPC — un par de esas integraciones fueron chatbots. Uso Git, Docker y Linux con total naturalidad. Hablante nativo de español, con inglés fluido, radicado en Uppsala, Suecia, en búsqueda de trabajo backend o full-stack fuera del ecosistema Odoo."
+    "summary": "Desarrollador full-stack con orientación a backend, con dos años y medio de experiencia. La mayor parte de ese tiempo la dediqué a trabajar con Python, PostgreSQL y JavaScript dentro de Odoo, un ERP de código abierto de gran escala, desarrollando para clientes fuera de Argentina. En el día a día eso implica lógica de negocio en Python, modelos de datos a través del ORM, componentes de front-end en OWL y QWeb, e integración de sistemas mediante REST y XML-RPC, un par de esas integraciones fueron chatbots. Uso Git, Docker y Linux con total naturalidad. Hablante nativo de español, con inglés fluido, radicado en Uppsala, Suecia, en busca de un puesto de backend o full-stack fuera del mundo Odoo."
   },
   "skills": {
     "title": "Habilidades",
     "categories": [
       { "label": "Lenguajes", "items": ["Python", "JavaScript", "SQL", "HTML", "XML", "CSS"] },
-      { "label": "Backend", "items": ["Python", "modelado de datos/ORM", "PostgreSQL", "lógica de negocio", "automatización de procesos"] },
-      { "label": "Frontend", "items": ["JavaScript", "OWL (UI basada en componentes)", "HTML/CSS", "templating QWeb"] },
+      { "label": "Backend", "items": ["Python", "ORM/modelado de datos", "PostgreSQL", "lógica de negocio", "automatización de flujos de trabajo"] },
+      { "label": "Frontend", "items": ["JavaScript", "OWL (UI basada en componentes)", "HTML/CSS", "plantillas QWeb"] },
       { "label": "APIs", "items": ["REST", "XML-RPC", "JSON", "integraciones con chatbots", "integraciones con terceros"] },
       { "label": "Herramientas", "items": ["Git", "GitHub", "GitLab", "Docker", "Linux", "AWS", "Claude Code"] },
-      { "label": "Odoo ERP (v13-v18)", "items": ["Ventas", "POS", "Inventario", "Contabilidad", "CRM", "Website"] }
+      { "label": "Odoo ERP (v13-v18)", "items": ["Ventas", "POS", "Inventario", "Contabilidad", "CRM", "Sitio web"] }
     ]
   },
   "experience": {
     "title": "Experiencia",
     "jobsTitle": "Experiencia laboral",
     "jobs": [
-      { "company": "NTB Solutions S.A.", "role": "Desarrollador de Software (Odoo/ERP)", "location": "Argentina", "dates": "ago. 2026 – nov. 2026", "description": "Desarrollo backend en Python y frontend en JavaScript/XML para proyectos de ERP de clientes: extensión de modelos de datos y lógica de negocio a través del ORM, construcción de integraciones con sistemas externos, y acompañamiento de funcionalidades desde el pedido del cliente hasta su puesta en producción." },
-      { "company": "Mirgor", "role": "Desarrollador de Software (Odoo/ERP)", "location": "Argentina", "dates": "ago. 2024 – ago. 2026 (2 años)", "description": "Construcción y mantenimiento de módulos de ERP de punta a punta: lógica de backend, modelos de datos y UI de frontend. La mayor parte fue Python del lado del ORM, extendiendo modelos y vistas por herencia sobre PostgreSQL, además de JavaScript, XML y QWeb en el frontend. Configuración de integraciones REST y XML-RPC con sistemas externos (dos de ellas chatbots) para reducir trabajo manual en el flujo del cliente. Uso de Docker para mantener entornos de desarrollo consistentes en el equipo y Git para control de versiones sobre Linux. Trato directo con clientes para relevar requerimientos." },
-      { "company": "Fundación Mirgor", "role": "Desarrollador de Software (Odoo/ERP)", "location": "Río Grande, Argentina", "dates": "abr. 2024 – ago. 2024 (5 meses)", "description": "Primer trabajo real de desarrollo. Adaptación de módulos de ERP a las necesidades de los clientes — lógica de backend, modelos de datos, algo de frontend — bajo la guía de desarrolladores senior que todavía me estaban formando en el framework. Se convirtió en el puesto full-time en Mirgor unos meses después." }
+      { "company": "NTB Solutions S.A.", "role": "Desarrollador de Software (Odoo/ERP)", "location": "Argentina", "dates": "ago. 2026 – nov. 2026", "description": "Desarrollo backend en Python y frontend en JavaScript/XML en proyectos ERP para clientes: extensión de modelos de datos y lógica de negocio a través del ORM, desarrollo de integraciones con sistemas externos, y la implementación de funcionalidades desde el pedido del cliente hasta su puesta en producción." },
+      { "company": "Mirgor", "role": "Desarrollador de Software (Odoo/ERP)", "location": "Argentina", "dates": "ago. 2024 – ago. 2026 (2 años)", "description": "Desarrollé y mantuve módulos ERP de punta a punta: lógica de backend, modelos de datos y UI de frontend. La mayor parte fue en Python del lado del ORM, extendiendo modelos y vistas mediante herencia sobre PostgreSQL, además de JavaScript, XML y QWeb en el frontend. Implementé integraciones REST y XML-RPC con sistemas externos (dos de ellas chatbots) para reducir el trabajo manual en el flujo de trabajo del cliente. Usé Docker para mantener entornos de desarrollo consistentes en el equipo y Git para control de versiones sobre Linux. Trato directo con clientes para la toma de requerimientos." },
+      { "company": "Fundación Mirgor", "role": "Desarrollador de Software (Odoo/ERP)", "location": "Río Grande, Argentina", "dates": "abr. 2024 – ago. 2024 (5 meses)", "description": "Mi primer trabajo real en desarrollo. Adapté módulos ERP a las necesidades de los clientes (lógica de backend, modelos de datos, algo de frontend) bajo la guía de desarrolladores senior que todavía me estaban enseñando el framework. Se convirtió en el puesto full-time en Mirgor unos meses después." }
     ],
-    "internship": { "company": "Municipalidad de Río Grande", "role": "Pasantía de Soporte IT (Departamento de IT)", "location": "Argentina", "description": "Diagnóstico, reparación y mantenimiento preventivo de hardware y equipos utilizados por el personal municipal." },
+    "internship": { "company": "Municipalidad de Río Grande", "role": "Pasante de Soporte IT (Departamento de IT)", "location": "Argentina", "description": "Diagnostiqué, reparé y realicé mantenimiento preventivo de hardware y equipos utilizados por el personal municipal." },
     "educationTitle": "Educación",
-    "education": { "institution": "Teclab Instituto Técnico Superior", "program": "Técnico Superior en Programación", "dates": "nov. 2023 – 2025", "description": "Técnico superior en desarrollo de software, con formación en programación, bases de datos y desarrollo backend." },
+    "education": { "institution": "Teclab Instituto Técnico Superior", "program": "Técnico Superior en Programación", "dates": "nov. 2023 – 2025", "description": "Título técnico superior en desarrollo de software (Técnico Superior en Programación), con formación en programación, bases de datos y desarrollo backend." },
     "certificationsTitle": "Certificaciones",
     "certifications": ["Certificación en Programación Full-Stack (EGG Cooperation)", "IGCSE en Tecnología de la Información y la Comunicación (Cambridge)"],
     "languagesTitle": "Idiomas",

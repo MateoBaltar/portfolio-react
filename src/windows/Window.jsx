@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useWindowManager } from './WindowManagerContext';
 import { playClick } from '../shell/sound';
 
@@ -9,11 +9,22 @@ import { playClick } from '../shell/sound';
 const DEFAULT_WINDOW_WIDTH = 480;
 const DEFAULT_WINDOW_HEIGHT = 360;
 
+// Matches the CSS window-enter/window-exit keyframe durations.
+const CLOSE_ANIMATION_MS = 160;
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export function Window({ id, title, onClose = () => {}, children }) {
   const { windows, moveWindow, focusWindow, closeWindow, toggleFullscreen } =
     useWindowManager();
   const containerRef = useRef(null);
   const dragStateRef = useRef(null);
+  const closeTimeoutRef = useRef(null);
+  const [closing, setClosing] = useState(false);
+
+  useEffect(() => () => clearTimeout(closeTimeoutRef.current), []);
 
   const record = windows.find((w) => w.id === id);
   const x = record?.x ?? 0;
@@ -81,8 +92,16 @@ export function Window({ id, title, onClose = () => {}, children }) {
 
   const handleClose = () => {
     playClick();
-    onClose();
-    closeWindow(id);
+    if (prefersReducedMotion()) {
+      onClose();
+      closeWindow(id);
+      return;
+    }
+    setClosing(true);
+    closeTimeoutRef.current = setTimeout(() => {
+      onClose();
+      closeWindow(id);
+    }, CLOSE_ANIMATION_MS);
   };
 
   const style = fullscreen
@@ -99,7 +118,7 @@ export function Window({ id, title, onClose = () => {}, children }) {
   return (
     <div
       ref={containerRef}
-      className="window"
+      className={closing ? 'window window--closing' : 'window'}
       data-testid={`window-${id}`}
       data-fullscreen={fullscreen}
       style={style}

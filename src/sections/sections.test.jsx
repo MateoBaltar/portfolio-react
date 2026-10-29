@@ -15,7 +15,7 @@ test('About renders the EN summary by default and the ES summary when lang is es
   const { rerender } = render(withLang(<About />, 'en'));
   expect(screen.getByText(/Backend-leaning full-stack developer/)).toBeInTheDocument();
   rerender(withLang(<About />, 'es'));
-  expect(screen.getByText(/Desarrollador full-stack con inclinación backend/)).toBeInTheDocument();
+  expect(screen.getByText(/Desarrollador full-stack con orientación a backend/)).toBeInTheDocument();
 });
 
 test('Contact form posts to the formsubmit.co endpoint with the required fields', () => {

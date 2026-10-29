@@ -56,7 +56,7 @@ test('toggling language re-renders an open section without closing its window', 
   expect(screen.getByText(/Backend-leaning full-stack developer/)).toBeInTheDocument();
   fireEvent.click(screen.getByTestId('lang-toggle'));
   expect(screen.getByTestId('window-about')).toBeInTheDocument();
-  expect(screen.getByText(/Desarrollador full-stack con inclinación backend/)).toBeInTheDocument();
+  expect(screen.getByText(/Desarrollador full-stack con orientación a backend/)).toBeInTheDocument();
   vi.useRealTimers();
 });
 
@@ -126,7 +126,7 @@ test('desktop: typing "lang es" into the terminal window switches the visible la
   fireEvent.submit(input.closest('form'));
 
   fireEvent.doubleClick(screen.getByTestId('desktop-icon-about'));
-  expect(screen.getByText(/Desarrollador full-stack con inclinación backend/)).toBeInTheDocument();
+  expect(screen.getByText(/Desarrollador full-stack con orientación a backend/)).toBeInTheDocument();
   vi.useRealTimers();
 });
 

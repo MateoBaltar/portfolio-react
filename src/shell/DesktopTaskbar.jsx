@@ -122,7 +122,6 @@ export function DesktopTaskbar({
           onClick={handleMenuToggle}
         >
           <img src={fireOSMark} alt="" className="desktop-taskbar__menu-icon" />
-          {menuLabel}
         </button>
         {menuOpen && (
           <div className="desktop-taskbar__popup" data-testid="desktop-menu-popup">
