@@ -112,46 +112,48 @@ export function DesktopTaskbar({
 
   return (
     <div className="desktop-taskbar">
-      <div className="desktop-taskbar__menu-wrap" ref={menuRef}>
-        <button
-          type="button"
-          className="desktop-taskbar__menu-button"
-          data-testid="desktop-menu-button"
-          aria-expanded={menuOpen}
-          aria-label={menuLabel}
-          onClick={handleMenuToggle}
-        >
-          <img src={fireOSMark} alt="" className="desktop-taskbar__menu-icon" />
-        </button>
-        {menuOpen && (
-          <div className="desktop-taskbar__popup" data-testid="desktop-menu-popup">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="desktop-taskbar__popup-item"
-                data-testid={`desktop-menu-item-${item.id}`}
-                onClick={() => handleMenuItemClick(item.id)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="desktop-taskbar__tabs">
-        {openWindows.map((win) => (
+      <div className="desktop-taskbar__center">
+        <div className="desktop-taskbar__menu-wrap" ref={menuRef}>
           <button
-            key={win.id}
             type="button"
-            className="desktop-taskbar__tab"
-            data-testid={`taskbar-tab-${win.id}`}
-            aria-pressed={activeId === win.id}
-            onClick={() => handleTabClick(win.id)}
+            className="desktop-taskbar__menu-button"
+            data-testid="desktop-menu-button"
+            aria-expanded={menuOpen}
+            aria-label={menuLabel}
+            onClick={handleMenuToggle}
           >
-            {win.label}
+            <img src={fireOSMark} alt="" className="desktop-taskbar__menu-icon" />
           </button>
-        ))}
+          {menuOpen && (
+            <div className="desktop-taskbar__popup" data-testid="desktop-menu-popup">
+              {menuItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="desktop-taskbar__popup-item"
+                  data-testid={`desktop-menu-item-${item.id}`}
+                  onClick={() => handleMenuItemClick(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="desktop-taskbar__tabs">
+          {openWindows.map((win) => (
+            <button
+              key={win.id}
+              type="button"
+              className="desktop-taskbar__tab"
+              data-testid={`taskbar-tab-${win.id}`}
+              aria-pressed={activeId === win.id}
+              onClick={() => handleTabClick(win.id)}
+            >
+              {win.label}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="desktop-taskbar__tray">
         <button

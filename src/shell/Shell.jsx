@@ -119,8 +119,8 @@ function ShellBody() {
     return (
       <div className="shell">
         <div className="space-bg" data-testid="space-bg" aria-hidden="true">
-          <div className="space-bg__blackhole-ring" />
           <div className="space-bg__blackhole-core" />
+          <div className="space-bg__blackhole-halo" />
         </div>
         <Desktop items={desktopItems} onOpen={openSection} />
         {windows.map((w) => {

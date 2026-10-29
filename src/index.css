@@ -170,60 +170,58 @@ a:focus-visible {
   animation-delay: 1.5s;
 }
 
-/* Gargantua-style lensed disk. The ring element is masked into an actual
-   hollow annulus (not a filled ellipse) so it reads as a glowing loop on
-   its own; the solid dark core then sits in front, shifted down slightly,
-   eclipsing most of the bottom of that loop while leaving the top mostly
-   exposed — that's the "lensed arc above, thinner band below" look, done
-   with plain layering and a mask rather than actual ray-tracing. */
-.space-bg__blackhole-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 320px;
-  height: 140px;
-  margin: -70px 0 0 -160px;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 200deg,
-    rgba(216, 222, 233, 0.9) 0deg,
-    rgba(192, 132, 252, 0.75) 60deg,
-    rgba(192, 132, 252, 0.35) 140deg,
-    rgba(90, 60, 130, 0.18) 200deg,
-    rgba(192, 132, 252, 0.3) 260deg,
-    rgba(192, 132, 252, 0.7) 330deg,
-    rgba(216, 222, 233, 0.9) 360deg
-  );
-  -webkit-mask-image: radial-gradient(
-    ellipse at center,
-    transparent 0%,
-    transparent 55%,
-    white 62%,
-    white 90%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(
-    ellipse at center,
-    transparent 0%,
-    transparent 55%,
-    white 62%,
-    white 90%,
-    transparent 100%
-  );
-  filter: blur(1.5px);
-  animation: blackhole-spin 42s linear infinite;
-}
-
+/* Gargantua as two layers: a dark circle with a glowing rim (box-shadow rings
+   that fade with distance), plus a wider misty band laid across the front at
+   a fixed tilt, bright in the middle and feathering out at both ends. */
 .space-bg__blackhole-core {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 240px;
-  height: 98px;
-  margin: -40px 0 0 -120px;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
   border-radius: 50%;
   background: var(--bg);
-  box-shadow: 0 0 40px 14px rgba(192, 132, 252, 0.22);
+  box-shadow:
+    0 0 10px 3px rgba(192, 132, 252, 0.65),
+    0 0 26px 9px rgba(192, 132, 252, 0.32),
+    0 0 52px 18px rgba(192, 132, 252, 0.14);
+}
+
+.space-bg__blackhole-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 420px;
+  height: 90px;
+  margin: -45px 0 0 -210px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(216, 222, 233, 0.55) 0%,
+    rgba(192, 132, 252, 0.4) 28%,
+    rgba(192, 132, 252, 0.16) 55%,
+    transparent 78%
+  );
+  filter: blur(7px);
+  transform: rotate(-24deg);
+  animation: halo-breathe 6s ease-in-out infinite;
+}
+
+@keyframes halo-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .space-bg__blackhole-halo {
+    animation: none;
+  }
 }
 
 @keyframes star-twinkle-a {
@@ -246,16 +244,9 @@ a:focus-visible {
   }
 }
 
-@keyframes blackhole-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .space-bg::before,
-  .space-bg::after,
-  .space-bg__blackhole-ring {
+  .space-bg::after {
     animation: none;
   }
 }
@@ -283,6 +274,18 @@ a:focus-visible {
   padding: 8px 16px;
   background: var(--surface);
   border-top: 1px solid var(--border);
+}
+
+/* centered like Windows' taskbar: menu + open-window tabs sit in the middle
+   of the bar regardless of tray width, instead of pinned flush-left */
+.desktop-taskbar__center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100% - 220px);
 }
 
 .desktop-taskbar__menu-wrap {
