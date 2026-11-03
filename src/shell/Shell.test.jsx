@@ -367,6 +367,67 @@ test('desktop: the sound toggle switches mute state', () => {
   vi.useRealTimers();
 });
 
+test('desktop: GitHub and Minesweeper are openable from the start menu and the icon grid', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.getByTestId('desktop-icon-github')).toBeInTheDocument();
+  expect(screen.getByTestId('desktop-icon-minesweeper')).toBeInTheDocument();
+
+  fireEvent.click(screen.getByTestId('desktop-menu-button'));
+  expect(screen.getByTestId('desktop-menu-item-github')).toBeInTheDocument();
+  expect(screen.getByTestId('desktop-menu-item-minesweeper')).toBeInTheDocument();
+
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-minesweeper'));
+  expect(screen.getByTestId('window-minesweeper')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('mobile: GitHub and Minesweeper appear in the flat nav bar', () => {
+  window.matchMedia = () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.getByTestId('nav-github')).toBeInTheDocument();
+  expect(screen.getByTestId('nav-minesweeper')).toBeInTheDocument();
+  fireEvent.click(screen.getByTestId('nav-minesweeper'));
+  expect(screen.getByTestId('section-minesweeper')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('desktop: typing "fetch" into the terminal prints OS info', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'fetch' } });
+  fireEvent.submit(input.closest('form'));
+
+  expect(screen.getByText(/OS: FireOS v1\.0/)).toBeInTheDocument();
+  expect(screen.getByText(/Host: Uppsala, Sweden/)).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('desktop: an easter egg command prints its joke instead of "command not found"', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'sudo' } });
+  fireEvent.submit(input.closest('form'));
+
+  expect(screen.getByText("nice try, you're not root here.")).toBeInTheDocument();
+  expect(screen.queryByText('command not found, try \'help\'')).toBeNull();
+  vi.useRealTimers();
+});
+
 test('desktop: clicking an open-window taskbar tab focuses that window', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();

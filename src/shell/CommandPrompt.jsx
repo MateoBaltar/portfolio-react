@@ -8,6 +8,8 @@ export function CommandPrompt({
   helpIntro,
   prompt,
   hint,
+  extraCommands = {},
+  easterEggs = {},
 }) {
   const [value, setValue] = useState('');
   // seed the log with a hint so an empty prompt isn't a dead end for first-time visitors
@@ -27,7 +29,16 @@ export function CommandPrompt({
     } else if (commandNames.includes(name)) {
       // echo it back so the typed line doesn't just vanish
       setLog((prev) => [...prev, [name, ...args].join(' ')]);
-      onCommand(name, args);
+      if (extraCommands[name]) {
+        // Self-contained commands (e.g. `fetch`) print straight into this
+        // log instead of asking the shell to do anything external.
+        setLog((prev) => [...prev, ...extraCommands[name](args)]);
+      } else {
+        onCommand(name, args);
+      }
+    } else if (easterEggs[name]) {
+      // not in commandNames/help on purpose, found by trying
+      setLog((prev) => [...prev, [name, ...args].join(' '), easterEggs[name]]);
     } else {
       setLog((prev) => [...prev, notFoundMessage]);
     }

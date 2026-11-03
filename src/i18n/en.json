@@ -1,12 +1,13 @@
 {
-  "nav": { "about": "About", "skills": "Skills", "experience": "Experience", "projects": "Projects", "contact": "Contact", "terminal": "Terminal" },
+  "nav": { "about": "About", "skills": "Skills", "experience": "Experience", "projects": "Projects", "contact": "Contact", "github": "GitHub", "minesweeper": "Minesweeper", "terminal": "Terminal" },
   "shell": {
     "bootLines": ["Booting FireOS v1.0...", "Loading profile: Mateo Baltar", "Mounting /experience ...", "Mounting /skills ...", "Mounting /projects ...", "Ready."],
     "prompt": "guest@fireos:~$",
     "helpIntro": "Available commands:",
     "commandNotFound": "command not found, try 'help'",
     "hint": "Type 'help' to see available commands.",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "fetch": { "osLabel": "OS", "shellLabel": "Shell", "hostLabel": "Host", "languagesLabel": "Languages" }
   },
   "about": {
     "title": "About",
@@ -58,5 +59,22 @@
     "formEmail": "Email",
     "formMessage": "Message",
     "formSubmit": "SUBMIT"
+  },
+  "github": {
+    "title": "GitHub",
+    "loading": "Loading GitHub stats…",
+    "error": "Couldn't load GitHub stats right now.",
+    "visitLink": "Visit github.com/MateoBaltar",
+    "reposLabel": "Public repos",
+    "followersLabel": "Followers",
+    "chartAlt": "GitHub contribution graph for MateoBaltar"
+  },
+  "minesweeper": {
+    "title": "Minesweeper",
+    "restart": "Restart",
+    "flagMode": "Flag mode",
+    "win": "You win!",
+    "lose": "Boom — game over.",
+    "minesLabel": "Mines"
   }
 }

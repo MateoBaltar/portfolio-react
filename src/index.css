@@ -558,6 +558,7 @@ a:focus-visible {
 .prompt__log-line {
   color: var(--text-dim);
   font-size: 0.9em;
+  white-space: pre-wrap;
 }
 
 .prompt__form {
@@ -826,6 +827,79 @@ a:focus-visible {
 .projects__link:hover {
   border-color: var(--accent);
   text-decoration: none;
+}
+
+/* ---------- GitHub stats ---------- */
+
+.github__chart {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  margin-top: 8px;
+}
+
+/* ---------- Minesweeper ---------- */
+
+.minesweeper__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.minesweeper__toolbar button {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.minesweeper__toolbar button:hover,
+.minesweeper__flag-toggle--active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.minesweeper__counter {
+  color: var(--text-dim);
+  font-size: 0.9em;
+}
+
+.minesweeper__grid {
+  display: inline-flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+}
+
+.minesweeper__row {
+  display: flex;
+}
+
+.minesweeper__cell {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.85em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.minesweeper__cell--revealed {
+  background: var(--bg);
+  cursor: default;
+}
+
+.minesweeper__cell:hover {
+  border-color: var(--accent);
 }
 
 /* ---------- Contact ---------- */

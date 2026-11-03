@@ -1,12 +1,13 @@
 {
-  "nav": { "about": "Sobre mí", "skills": "Habilidades", "experience": "Experiencia", "projects": "Proyectos", "contact": "Contacto", "terminal": "Terminal" },
+  "nav": { "about": "Sobre mí", "skills": "Habilidades", "experience": "Experiencia", "projects": "Proyectos", "contact": "Contacto", "github": "GitHub", "minesweeper": "Buscaminas", "terminal": "Terminal" },
   "shell": {
     "bootLines": ["Iniciando FireOS v1.0...", "Cargando perfil: Mateo Baltar", "Montando /experiencia ...", "Montando /habilidades ...", "Montando /proyectos ...", "Listo."],
     "prompt": "invitado@fireos:~$",
     "helpIntro": "Comandos disponibles:",
     "commandNotFound": "comando no encontrado, prueba 'help'",
     "hint": "Escribe 'help' para ver los comandos disponibles.",
-    "menuLabel": "Menú"
+    "menuLabel": "Menú",
+    "fetch": { "osLabel": "SO", "shellLabel": "Shell", "hostLabel": "Host", "languagesLabel": "Idiomas" }
   },
   "about": {
     "title": "Sobre mí",
@@ -58,5 +59,22 @@
     "formEmail": "Correo",
     "formMessage": "Mensaje",
     "formSubmit": "ENVIAR"
+  },
+  "github": {
+    "title": "GitHub",
+    "loading": "Cargando estadísticas de GitHub…",
+    "error": "No se pudieron cargar las estadísticas de GitHub.",
+    "visitLink": "Visitar github.com/MateoBaltar",
+    "reposLabel": "Repositorios públicos",
+    "followersLabel": "Seguidores",
+    "chartAlt": "Gráfico de contribuciones de GitHub de MateoBaltar"
+  },
+  "minesweeper": {
+    "title": "Buscaminas",
+    "restart": "Reiniciar",
+    "flagMode": "Modo bandera",
+    "win": "¡Ganaste!",
+    "lose": "Boom — fin del juego.",
+    "minesLabel": "Minas"
   }
 }

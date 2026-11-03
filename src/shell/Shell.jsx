@@ -13,6 +13,8 @@ import { Skills } from '../sections/Skills';
 import { Experience } from '../sections/Experience';
 import { Projects } from '../sections/Projects';
 import { Contact } from '../sections/Contact';
+import { GitHubStats } from '../apps/GitHubStats';
+import { Minesweeper } from '../apps/Minesweeper';
 
 const SECTIONS = {
   about: About,
@@ -20,15 +22,51 @@ const SECTIONS = {
   experience: Experience,
   projects: Projects,
   contact: Contact,
+  github: GitHubStats,
+  minesweeper: Minesweeper,
 };
 
 const SECTION_IDS = Object.keys(SECTIONS);
-// Desktop mode adds one more openable "app" beyond the five content
-// sections: the terminal itself now lives inside its own window instead of
-// being permanently docked, so it needs a place in the icon grid/start menu.
+// Desktop mode adds one more openable "app" beyond the content sections:
+// the terminal itself now lives inside its own window instead of being
+// permanently docked, so it needs a place in the icon grid/start menu.
 const DESKTOP_ITEM_IDS = [...SECTION_IDS, 'terminal'];
 
 const LANG_CODES = ['en', 'es'];
+
+// A small neofetch-style block. The ASCII art stays constant across
+// languages; the stats line labels come from the dictionary.
+const ASCII_FLAME = ['  (', ' ) \\', '( ) )', ' )_/'];
+
+function buildFetchLines(t) {
+  const fetchStrings = t('shell').fetch;
+  const contact = t('contact');
+  const languagesCategory = t('skills').categories.find((c) => c.items?.includes('Python'));
+  const languages = languagesCategory ? languagesCategory.items.slice(0, 3).join(', ') : '';
+
+  const statLines = [
+    `${fetchStrings.osLabel}: FireOS v1.0`,
+    `${fetchStrings.shellLabel}: fireos-sh`,
+    `${fetchStrings.hostLabel}: ${contact.location}`,
+    `${fetchStrings.languagesLabel}: ${languages}`,
+  ];
+
+  const lineCount = Math.max(ASCII_FLAME.length, statLines.length);
+  const lines = [];
+  for (let i = 0; i < lineCount; i += 1) {
+    const art = (ASCII_FLAME[i] ?? '').padEnd(8);
+    lines.push(`${art}${statLines[i] ?? ''}`);
+  }
+  return lines;
+}
+
+// not listed in commandNames/help, found by trying rather than reading
+const EASTER_EGGS = {
+  sudo: "nice try, you're not root here.",
+  rm: 'nothing was harmed. probably for the best.',
+  sl: '   choo choo, you probably meant "ls".',
+  coffee: 'brewing... still faster than a cold deploy.',
+};
 
 function ShellBody() {
   const { lang, t, setLang } = useLanguage();
@@ -52,6 +90,12 @@ function ShellBody() {
     () => DESKTOP_ITEM_IDS.map((id) => ({ id, label: navLabels[id] })),
     [navLabels]
   );
+
+  // Shared by both CommandPrompt instances (the windowed terminal on
+  // desktop, the permanently-docked one on mobile) so `fetch`/easter eggs
+  // work identically everywhere the terminal exists.
+  const terminalCommandNames = useMemo(() => [...SECTION_IDS, 'lang', 'fetch'], []);
+  const terminalExtraCommands = useMemo(() => ({ fetch: () => buildFetchLines(t) }), [t]);
 
   const openSection = (id) => {
     lastSectionRef.current = { id, label: navLabels[id] };
@@ -143,12 +187,14 @@ function ShellBody() {
             >
               {isTerminal ? (
                 <CommandPrompt
-                  commandNames={[...SECTION_IDS, 'lang']}
+                  commandNames={terminalCommandNames}
                   onCommand={handleCommand}
                   notFoundMessage={shellStrings.commandNotFound}
                   helpIntro={shellStrings.helpIntro}
                   prompt={shellStrings.prompt}
                   hint={shellStrings.hint}
+                  extraCommands={terminalExtraCommands}
+                  easterEggs={EASTER_EGGS}
                 />
               ) : (
                 <SectionComponent />
@@ -181,12 +227,14 @@ function ShellBody() {
         onNavClick={openSection}
       />
       <CommandPrompt
-        commandNames={[...SECTION_IDS, 'lang']}
+        commandNames={terminalCommandNames}
         onCommand={handleCommand}
         notFoundMessage={shellStrings.commandNotFound}
         helpIntro={shellStrings.helpIntro}
         prompt={shellStrings.prompt}
         hint={shellStrings.hint}
+        extraCommands={terminalExtraCommands}
+        easterEggs={EASTER_EGGS}
       />
       {ActiveMobileSection && (
         <div className="section-page" data-testid={`section-${activeSection}`}>
