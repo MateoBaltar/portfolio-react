@@ -1,5 +1,5 @@
 {
-  "nav": { "about": "Sobre mí", "skills": "Habilidades", "experience": "Experiencia", "projects": "Proyectos", "contact": "Contacto", "github": "GitHub", "minesweeper": "Buscaminas", "terminal": "Terminal" },
+  "nav": { "about": "Sobre mí", "skills": "Habilidades", "experience": "Experiencia", "projects": "Proyectos", "contact": "Contacto", "github": "GitHub", "minesweeper": "Buscaminas", "snake": "Snake", "terminal": "Terminal" },
   "shell": {
     "bootLines": ["Iniciando FireOS v1.0...", "Cargando perfil: Mateo Baltar", "Montando /experiencia ...", "Montando /habilidades ...", "Montando /proyectos ...", "Listo."],
     "prompt": "invitado@fireos:~$",
@@ -74,7 +74,16 @@
     "restart": "Reiniciar",
     "flagMode": "Modo bandera",
     "win": "¡Ganaste!",
-    "lose": "Boom — fin del juego.",
-    "minesLabel": "Minas"
+    "lose": "Boom. Fin del juego.",
+    "minesLabel": "Minas",
+    "bestLabel": "Mejor",
+    "difficulties": { "beginner": "Principiante", "intermediate": "Intermedio", "expert": "Experto" }
+  },
+  "snake": {
+    "title": "Snake",
+    "restart": "Reiniciar",
+    "scoreLabel": "Puntos",
+    "bestLabel": "Mejor",
+    "lose": "Fin del juego, chocaste contra una pared o contra tu propio cuerpo."
   }
 }

@@ -97,6 +97,68 @@ test('clicking close plays a click sound', () => {
   expect(playClick).toHaveBeenCalled();
 });
 
+test('the resize handle is present on a normal window and hidden while fullscreen', () => {
+  render(
+    <WindowManagerProvider>
+      <Harness />
+    </WindowManagerProvider>
+  );
+  expect(screen.getByTestId('window-resize-about')).toBeInTheDocument();
+
+  fireEvent.doubleClick(screen.getByTestId('window-titlebar-about'));
+  expect(screen.getByTestId('window-about').dataset.fullscreen).toBe('true');
+  expect(screen.queryByTestId('window-resize-about')).toBeNull();
+});
+
+test('a window defaults to the standard size and reflects a resized width/height from the manager', () => {
+  function ResizeHarness() {
+    const { openWindow, resizeWindow } = useWindowManager();
+    useEffect(() => openWindow('about', 'About'), []);
+    return (
+      <>
+        <Window id="about" title="About">
+          content
+        </Window>
+        <button
+          type="button"
+          data-testid="do-resize"
+          onClick={() =>
+            resizeWindow('about', { width: 640, height: 520 }, { x: 0, y: 0, winWidth: 1200, winHeight: 900 })
+          }
+        >
+          resize
+        </button>
+      </>
+    );
+  }
+  render(
+    <WindowManagerProvider>
+      <ResizeHarness />
+    </WindowManagerProvider>
+  );
+  const windowEl = screen.getByTestId('window-about');
+  expect(windowEl.style.width).toBe('480px');
+  expect(windowEl.style.height).toBe('360px');
+
+  fireEvent.click(screen.getByTestId('do-resize'));
+  expect(windowEl.style.width).toBe('640px');
+  expect(windowEl.style.height).toBe('520px');
+});
+
+test('a pointerdown on the resize handle does not bubble into the title bar\'s own drag-capture', () => {
+  const setPointerCapture = vi.fn();
+  window.HTMLElement.prototype.setPointerCapture = setPointerCapture;
+  render(
+    <WindowManagerProvider>
+      <Harness />
+    </WindowManagerProvider>
+  );
+  fireEvent.pointerDown(screen.getByTestId('window-resize-about'), { pointerId: 3 });
+  // Exactly one capture call (the resize handle's own), not a second one
+  // from the title bar reacting to a bubbled event.
+  expect(setPointerCapture).toHaveBeenCalledTimes(1);
+});
+
 test('a pointerdown on the close button does not capture the pointer on the title bar', () => {
   // Regression test: capturing here would steal the subsequent click away
   // from the button in a real browser, even though jsdom's fireEvent.click

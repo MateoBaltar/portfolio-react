@@ -398,6 +398,27 @@ test('mobile: GitHub and Minesweeper appear in the flat nav bar', () => {
   vi.useRealTimers();
 });
 
+test('desktop: Snake is openable from the start menu and the icon grid, with its own icon and a larger starting window', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  const icon = screen.getByTestId('desktop-icon-snake');
+  expect(icon).toBeInTheDocument();
+  expect(icon.querySelector('svg')).toBeTruthy();
+
+  fireEvent.click(screen.getByTestId('desktop-menu-button'));
+  expect(screen.getByTestId('desktop-menu-item-snake')).toBeInTheDocument();
+
+  fireEvent.doubleClick(icon);
+  const win = screen.getByTestId('window-snake');
+  expect(win).toBeInTheDocument();
+  expect(win.style.width).toBe('420px');
+  expect(win.style.height).toBe('480px');
+  vi.useRealTimers();
+});
+
 test('desktop: typing "fetch" into the terminal prints OS info', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();

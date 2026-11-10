@@ -15,6 +15,7 @@ import { Projects } from '../sections/Projects';
 import { Contact } from '../sections/Contact';
 import { GitHubStats } from '../apps/GitHubStats';
 import { Minesweeper } from '../apps/Minesweeper';
+import { Snake } from '../apps/Snake';
 
 const SECTIONS = {
   about: About,
@@ -24,6 +25,7 @@ const SECTIONS = {
   contact: Contact,
   github: GitHubStats,
   minesweeper: Minesweeper,
+  snake: Snake,
 };
 
 const SECTION_IDS = Object.keys(SECTIONS);
@@ -31,6 +33,13 @@ const SECTION_IDS = Object.keys(SECTIONS);
 // the terminal itself now lives inside its own window instead of being
 // permanently docked, so it needs a place in the icon grid/start menu.
 const DESKTOP_ITEM_IDS = [...SECTION_IDS, 'terminal'];
+
+// starting window size for anything that needs more than the default;
+// the resize handle covers whatever this doesn't (expert minesweeper etc)
+const WINDOW_SIZES = {
+  minesweeper: { width: 560, height: 640 },
+  snake: { width: 420, height: 480 },
+};
 
 const LANG_CODES = ['en', 'es'];
 
@@ -100,7 +109,7 @@ function ShellBody() {
   const openSection = (id) => {
     lastSectionRef.current = { id, label: navLabels[id] };
     if (mode === 'desktop') {
-      openWindow(id, navLabels[id]);
+      openWindow(id, navLabels[id], WINDOW_SIZES[id]);
     } else {
       setActiveSection(id);
     }
@@ -126,7 +135,7 @@ function ShellBody() {
     if (mode === 'desktop') {
       const alreadyOpen = windows.some((w) => w.id === last.id);
       if (!alreadyOpen) {
-        openWindow(last.id, last.label);
+        openWindow(last.id, last.label, WINDOW_SIZES[last.id]);
       }
     } else if (activeSection === null && last.id !== 'terminal') {
       // mobile has no stacked-section view for the terminal, so there's nothing to

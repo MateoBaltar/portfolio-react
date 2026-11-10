@@ -1,5 +1,5 @@
 {
-  "nav": { "about": "About", "skills": "Skills", "experience": "Experience", "projects": "Projects", "contact": "Contact", "github": "GitHub", "minesweeper": "Minesweeper", "terminal": "Terminal" },
+  "nav": { "about": "About", "skills": "Skills", "experience": "Experience", "projects": "Projects", "contact": "Contact", "github": "GitHub", "minesweeper": "Minesweeper", "snake": "Snake", "terminal": "Terminal" },
   "shell": {
     "bootLines": ["Booting FireOS v1.0...", "Loading profile: Mateo Baltar", "Mounting /experience ...", "Mounting /skills ...", "Mounting /projects ...", "Ready."],
     "prompt": "guest@fireos:~$",
@@ -74,7 +74,16 @@
     "restart": "Restart",
     "flagMode": "Flag mode",
     "win": "You win!",
-    "lose": "Boom — game over.",
-    "minesLabel": "Mines"
+    "lose": "Boom. Game over.",
+    "minesLabel": "Mines",
+    "bestLabel": "Best",
+    "difficulties": { "beginner": "Beginner", "intermediate": "Intermediate", "expert": "Expert" }
+  },
+  "snake": {
+    "title": "Snake",
+    "restart": "Restart",
+    "scoreLabel": "Score",
+    "bestLabel": "Best",
+    "lose": "Game over, hit a wall or yourself."
   }
 }

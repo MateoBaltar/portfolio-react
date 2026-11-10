@@ -4,11 +4,20 @@ const WindowManagerContext = createContext();
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
+// position: fixed with no explicit size means a window would otherwise
+// shrink-to-fit its content, which compounds the cascade-spawn fix by
+// letting windows overlap unpredictably. Give every window a sensible
+// default footprint instead.
+export const DEFAULT_WINDOW_WIDTH = 480;
+export const DEFAULT_WINDOW_HEIGHT = 360;
+export const MIN_WINDOW_WIDTH = 260;
+export const MIN_WINDOW_HEIGHT = 200;
+
 export function WindowManagerProvider({ children }) {
   const [windows, setWindows] = useState([]);
   const nextZIndexRef = useRef(1);
 
-  const openWindow = (id, title) => {
+  const openWindow = (id, title, initialSize) => {
     const zIndex = nextZIndexRef.current++;
     setWindows((current) => {
       const existing = current.find((w) => w.id === id);
@@ -22,10 +31,21 @@ export function WindowManagerProvider({ children }) {
       // taskbar/prompt (which sit in normal document flow above these
       // fixed-position windows) instead of covering them at y: 0.
       const cascadeOffset = (current.length * 28) % 280;
+      const width = initialSize?.width ?? DEFAULT_WINDOW_WIDTH;
+      const height = initialSize?.height ?? DEFAULT_WINDOW_HEIGHT;
 
       return [
         ...current,
-        { id, title, x: cascadeOffset, y: 80 + cascadeOffset, zIndex, fullscreen: false },
+        {
+          id,
+          title,
+          x: cascadeOffset,
+          y: 80 + cascadeOffset,
+          width,
+          height,
+          zIndex,
+          fullscreen: false,
+        },
       ];
     });
   };
@@ -52,6 +72,19 @@ export function WindowManagerProvider({ children }) {
     );
   };
 
+  // bounds carries the window's x/y plus viewport size, clamping so the right/bottom
+  // edge never passes the viewport; same bounds shape moveWindow uses
+  const resizeWindow = (id, size, bounds) => {
+    const maxWidth = Math.max(MIN_WINDOW_WIDTH, bounds.winWidth - bounds.x);
+    const maxHeight = Math.max(MIN_WINDOW_HEIGHT, bounds.winHeight - bounds.y);
+    const width = clamp(size.width, MIN_WINDOW_WIDTH, maxWidth);
+    const height = clamp(size.height, MIN_WINDOW_HEIGHT, maxHeight);
+
+    setWindows((current) =>
+      current.map((w) => (w.id === id ? { ...w, width, height } : w))
+    );
+  };
+
   const toggleFullscreen = (id) => {
     setWindows((current) =>
       current.map((w) =>
@@ -68,6 +101,7 @@ export function WindowManagerProvider({ children }) {
         closeWindow,
         focusWindow,
         moveWindow,
+        resizeWindow,
         toggleFullscreen,
       }}
     >

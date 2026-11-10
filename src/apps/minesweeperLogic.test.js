@@ -6,8 +6,10 @@ import {
   checkWin,
   revealAllMines,
   countFlags,
+  isNewBest,
   GRID_SIZE,
   MINE_COUNT,
+  DIFFICULTIES,
 } from './minesweeperLogic';
 
 test('createEmptyBoard produces a GRID_SIZE x GRID_SIZE board with no mines', () => {
@@ -87,4 +89,42 @@ test('countFlags counts flagged cells across the board', () => {
   board = toggleFlag(board, 0, 0);
   board = toggleFlag(board, 1, 1);
   expect(countFlags(board)).toBe(2);
+});
+
+test('createEmptyBoard supports a non-square board (cols != rows)', () => {
+  const board = createEmptyBoard(30, 16);
+  expect(board).toHaveLength(16);
+  expect(board[0]).toHaveLength(30);
+});
+
+test('placeMines works correctly on a non-square (expert-size) board', () => {
+  const board = createEmptyBoard(DIFFICULTIES.expert.cols, DIFFICULTIES.expert.rows);
+  const placed = placeMines(board, 8, 15, DIFFICULTIES.expert.mines);
+  const mineCount = placed.flat().filter((c) => c.mine).length;
+  expect(mineCount).toBe(DIFFICULTIES.expert.mines);
+  // Safe-zone cell and its neighbors must never be mined.
+  for (let dr = -1; dr <= 1; dr += 1) {
+    for (let dc = -1; dc <= 1; dc += 1) {
+      expect(placed[8 + dr]?.[15 + dc]?.mine).not.toBe(true);
+    }
+  }
+});
+
+test('revealCell flood-fill respects non-square board edges', () => {
+  // 4x2, no mines: one corner reveal should flood-fill the whole board
+  const board = createEmptyBoard(4, 2);
+  const revealed = revealCell(board, 0, 0);
+  const revealedCount = revealed.flat().filter((c) => c.revealed).length;
+  expect(revealedCount).toBe(8);
+});
+
+test('isNewBest is true when there is no stored best yet', () => {
+  expect(isNewBest(null, 30)).toBe(true);
+  expect(isNewBest(undefined, 30)).toBe(true);
+});
+
+test('isNewBest is true only when the candidate is strictly faster', () => {
+  expect(isNewBest(30, 29)).toBe(true);
+  expect(isNewBest(30, 30)).toBe(false);
+  expect(isNewBest(30, 31)).toBe(false);
 });

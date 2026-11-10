@@ -1,9 +1,16 @@
 export const GRID_SIZE = 9;
 export const MINE_COUNT = 10;
 
-export function createEmptyBoard(size = GRID_SIZE) {
-  return Array.from({ length: size }, (_, row) =>
-    Array.from({ length: size }, (_, col) => ({
+// rows defaults to cols so old single-size callers (beginner's square board) still work
+export const DIFFICULTIES = {
+  beginner: { cols: 9, rows: 9, mines: 10 },
+  intermediate: { cols: 16, rows: 16, mines: 40 },
+  expert: { cols: 30, rows: 16, mines: 99 },
+};
+
+export function createEmptyBoard(cols = GRID_SIZE, rows = cols) {
+  return Array.from({ length: rows }, (_, row) =>
+    Array.from({ length: cols }, (_, col) => ({
       row,
       col,
       mine: false,
@@ -14,13 +21,13 @@ export function createEmptyBoard(size = GRID_SIZE) {
   );
 }
 
-function forEachNeighbor(row, col, size, fn) {
+function forEachNeighbor(row, col, cols, rows, fn) {
   for (let dr = -1; dr <= 1; dr += 1) {
     for (let dc = -1; dc <= 1; dc += 1) {
       if (dr === 0 && dc === 0) continue;
       const r = row + dr;
       const c = col + dc;
-      if (r >= 0 && r < size && c >= 0 && c < size) {
+      if (r >= 0 && r < rows && c >= 0 && c < cols) {
         fn(r, c);
       }
     }
@@ -29,14 +36,17 @@ function forEachNeighbor(row, col, size, fn) {
 
 // Mines are placed only after the first click, avoiding that cell and its
 // neighbors, so the opening click is never a mine and never a blind guess.
+// Board dimensions are read from the board itself (rows = board.length,
+// cols = board[0].length), so this works unchanged for any grid shape.
 export function placeMines(board, safeRow, safeCol, mineCount = MINE_COUNT, rng = Math.random) {
-  const size = board.length;
+  const rows = board.length;
+  const cols = board[0]?.length ?? 0;
   const forbidden = new Set([`${safeRow},${safeCol}`]);
-  forEachNeighbor(safeRow, safeCol, size, (r, c) => forbidden.add(`${r},${c}`));
+  forEachNeighbor(safeRow, safeCol, cols, rows, (r, c) => forbidden.add(`${r},${c}`));
 
   const cells = [];
-  for (let r = 0; r < size; r += 1) {
-    for (let c = 0; c < size; c += 1) {
+  for (let r = 0; r < rows; r += 1) {
+    for (let c = 0; c < cols; c += 1) {
       if (!forbidden.has(`${r},${c}`)) {
         cells.push([r, c]);
       }
@@ -54,11 +64,11 @@ export function placeMines(board, safeRow, safeCol, mineCount = MINE_COUNT, rng 
     next[r][c].mine = true;
   });
 
-  for (let r = 0; r < size; r += 1) {
-    for (let c = 0; c < size; c += 1) {
+  for (let r = 0; r < rows; r += 1) {
+    for (let c = 0; c < cols; c += 1) {
       if (next[r][c].mine) continue;
       let count = 0;
-      forEachNeighbor(r, c, size, (nr, nc) => {
+      forEachNeighbor(r, c, cols, rows, (nr, nc) => {
         if (next[nr][nc].mine) count += 1;
       });
       next[r][c].adjacent = count;
@@ -71,7 +81,8 @@ export function placeMines(board, safeRow, safeCol, mineCount = MINE_COUNT, rng 
 // Flood-fill reveal: reveals (row, col), and if it has no adjacent mines,
 // keeps revealing its neighbors too. Returns a new board.
 export function revealCell(board, row, col) {
-  const size = board.length;
+  const rows = board.length;
+  const cols = board[0]?.length ?? 0;
   const next = board.map((r) => r.map((cell) => ({ ...cell })));
   const stack = [[row, col]];
   const seen = new Set();
@@ -85,7 +96,7 @@ export function revealCell(board, row, col) {
     if (cell.revealed || cell.flagged) continue;
     cell.revealed = true;
     if (cell.adjacent === 0 && !cell.mine) {
-      forEachNeighbor(r, c, size, (nr, nc) => {
+      forEachNeighbor(r, c, cols, rows, (nr, nc) => {
         if (!next[nr][nc].revealed) {
           stack.push([nr, nc]);
         }
@@ -115,4 +126,11 @@ export function checkWin(board) {
 
 export function countFlags(board) {
   return board.reduce((sum, row) => sum + row.filter((cell) => cell.flagged).length, 0);
+}
+
+// Pure so the "only overwrite a stored best if the new time is actually
+// better" rule is directly testable without needing to simulate a full,
+// randomly-mined game through the UI to a real win.
+export function isNewBest(currentBestSeconds, candidateSeconds) {
+  return currentBestSeconds == null || candidateSeconds < currentBestSeconds;
 }

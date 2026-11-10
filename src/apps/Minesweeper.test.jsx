@@ -34,3 +34,35 @@ test('the restart button resets the board to a fresh, unrevealed state', () => {
   expect(screen.queryByTestId('minesweeper-lose')).toBeNull();
   expect(screen.getByTestId('mines-left')).toHaveTextContent('10');
 });
+
+test('switching difficulty rebuilds the board at the new size and mine count', () => {
+  renderGame();
+  expect(screen.getByTestId('mine-cell-8-8')).toBeInTheDocument();
+  expect(screen.queryByTestId('mine-cell-15-15')).toBeNull();
+
+  fireEvent.click(screen.getByTestId('minesweeper-difficulty-intermediate'));
+
+  expect(screen.getByTestId('mine-cell-15-15')).toBeInTheDocument();
+  expect(screen.queryByTestId('mine-cell-16-0')).toBeNull();
+  expect(screen.getByTestId('mines-left')).toHaveTextContent('40');
+});
+
+test('no best time is shown before anything has been won', () => {
+  renderGame();
+  expect(screen.queryByTestId('minesweeper-best')).toBeNull();
+});
+
+test('a previously saved best time for the current difficulty is displayed on mount', () => {
+  const store = { 'fireos-minesweeper-best': JSON.stringify({ beginner: 42 }) };
+  window.localStorage = {
+    getItem: (key) => store[key] ?? null,
+    setItem: (key, value) => {
+      store[key] = value;
+    },
+  };
+
+  renderGame();
+  expect(screen.getByTestId('minesweeper-best')).toHaveTextContent('42s');
+
+  window.localStorage = undefined;
+});

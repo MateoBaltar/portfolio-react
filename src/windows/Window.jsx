@@ -1,13 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useWindowManager } from './WindowManagerContext';
+import { useWindowManager, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT } from './WindowManagerContext';
 import { playClick } from '../shell/sound';
-
-// position: fixed with no explicit size means a window would otherwise
-// shrink-to-fit its content, which compounds the cascade-spawn fix by
-// letting windows overlap unpredictably. Give every window a sensible
-// default footprint instead.
-const DEFAULT_WINDOW_WIDTH = 480;
-const DEFAULT_WINDOW_HEIGHT = 360;
 
 // Matches the CSS window-enter/window-exit keyframe durations.
 const CLOSE_ANIMATION_MS = 160;
@@ -17,10 +10,11 @@ function prefersReducedMotion() {
 }
 
 export function Window({ id, title, onClose = () => {}, children }) {
-  const { windows, moveWindow, focusWindow, closeWindow, toggleFullscreen } =
+  const { windows, moveWindow, resizeWindow, focusWindow, closeWindow, toggleFullscreen } =
     useWindowManager();
   const containerRef = useRef(null);
   const dragStateRef = useRef(null);
+  const resizeStateRef = useRef(null);
   const closeTimeoutRef = useRef(null);
   const [closing, setClosing] = useState(false);
 
@@ -29,6 +23,8 @@ export function Window({ id, title, onClose = () => {}, children }) {
   const record = windows.find((w) => w.id === id);
   const x = record?.x ?? 0;
   const y = record?.y ?? 0;
+  const width = record?.width ?? DEFAULT_WINDOW_WIDTH;
+  const height = record?.height ?? DEFAULT_WINDOW_HEIGHT;
   const zIndex = record?.zIndex ?? 0;
   const fullscreen = record?.fullscreen ?? false;
   // Display-only: the frontmost window by z-index gets a visually
@@ -49,8 +45,8 @@ export function Window({ id, title, onClose = () => {}, children }) {
       startY: event.clientY,
       originX: x,
       originY: y,
-      width: rect?.width ?? 0,
-      height: rect?.height ?? 0,
+      width: rect?.width ?? width,
+      height: rect?.height ?? height,
     };
     event.currentTarget.setPointerCapture?.(event.pointerId);
   };
@@ -104,6 +100,44 @@ export function Window({ id, title, onClose = () => {}, children }) {
     }, CLOSE_ANIMATION_MS);
   };
 
+  // A separate pointer-handler trio from the title bar's own drag, living on
+  // its own corner handle, so there's no interaction risk between the two
+  // gestures (the same reasoning that kept the close button structurally
+  // outside the title bar's drag-capture logic).
+  const handleResizePointerDown = (event) => {
+    resizeStateRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: width,
+      startHeight: height,
+    };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    event.stopPropagation();
+  };
+
+  const handleResizePointerMove = (event) => {
+    const resizeState = resizeStateRef.current;
+    if (!resizeState || resizeState.pointerId !== event.pointerId) {
+      return;
+    }
+    const deltaX = event.clientX - resizeState.startX;
+    const deltaY = event.clientY - resizeState.startY;
+    resizeWindow(
+      id,
+      { width: resizeState.startWidth + deltaX, height: resizeState.startHeight + deltaY },
+      { x, y, winWidth: window.innerWidth, winHeight: window.innerHeight }
+    );
+  };
+
+  const handleResizePointerUp = (event) => {
+    const resizeState = resizeStateRef.current;
+    if (!resizeState || resizeState.pointerId !== event.pointerId) {
+      return;
+    }
+    resizeStateRef.current = null;
+  };
+
   const style = fullscreen
     ? { position: 'fixed', inset: 0, zIndex }
     : {
@@ -111,8 +145,8 @@ export function Window({ id, title, onClose = () => {}, children }) {
         left: x,
         top: y,
         zIndex,
-        width: DEFAULT_WINDOW_WIDTH,
-        height: DEFAULT_WINDOW_HEIGHT,
+        width,
+        height,
       };
 
   return (
@@ -145,6 +179,15 @@ export function Window({ id, title, onClose = () => {}, children }) {
         </button>
       </div>
       <div className="window__body">{children}</div>
+      {!fullscreen && (
+        <div
+          className="window__resize-handle"
+          data-testid={`window-resize-${id}`}
+          onPointerDown={handleResizePointerDown}
+          onPointerMove={handleResizePointerMove}
+          onPointerUp={handleResizePointerUp}
+        />
+      )}
     </div>
   );
 }

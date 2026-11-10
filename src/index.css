@@ -712,8 +712,33 @@ a:focus-visible {
 
 .window__body {
   flex: 1;
-  overflow-y: auto;
+  overflow: auto;
   padding: 16px;
+}
+
+.window__resize-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  touch-action: none;
+}
+
+.window__resize-handle::after {
+  content: '';
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--border);
+  border-bottom: 2px solid var(--border);
+}
+
+.window__resize-handle:hover::after {
+  border-color: var(--accent);
 }
 
 /* ---------- Mobile section view ---------- */
@@ -841,6 +866,34 @@ a:focus-visible {
 
 /* ---------- Minesweeper ---------- */
 
+.minesweeper__difficulty {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.minesweeper__difficulty-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+  padding: 3px 9px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.minesweeper__difficulty-btn:hover,
+.minesweeper__difficulty-btn--active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.minesweeper__best {
+  color: var(--text-dim);
+  font-size: 0.9em;
+}
+
 .minesweeper__toolbar {
   display: flex;
   align-items: center;
@@ -900,6 +953,58 @@ a:focus-visible {
 
 .minesweeper__cell:hover {
   border-color: var(--accent);
+}
+
+/* ---------- Snake ---------- */
+
+.snake__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.snake__toolbar button {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.snake__toolbar button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.snake__score,
+.snake__best {
+  color: var(--text-dim);
+  font-size: 0.9em;
+}
+
+.snake__grid {
+  display: grid;
+  width: 320px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.snake__cell {
+  border: 1px solid rgba(42, 49, 64, 0.35);
+}
+
+.snake__cell--snake {
+  background: var(--accent);
+}
+
+.snake__cell--food {
+  background: var(--text);
+  border-radius: 50%;
 }
 
 /* ---------- Contact ---------- */
