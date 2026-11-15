@@ -5,6 +5,8 @@ import {
   cellToPixel,
   pixelToNearestCell,
   nearestFreeCell,
+  ICON_WIDTH,
+  ICON_HEIGHT,
 } from './dragPosition';
 import { playClick } from './sound';
 
@@ -39,7 +41,13 @@ function saveCells(cells) {
 // wraps into a new column every N rows so a long icon list doesn't make the page scroll
 const DEFAULT_ROWS_PER_COLUMN = 4;
 
-function defaultCell(index) {
+function defaultCell(id, index) {
+  // terminal defaults to the grid cell closest to true screen center, same idea as its window
+  if (id === 'terminal') {
+    const centerX = window.innerWidth / 2 - ICON_WIDTH / 2;
+    const centerY = window.innerHeight / 2 - ICON_HEIGHT / 2;
+    return pixelToNearestCell(centerX, centerY, window.innerWidth, window.innerHeight);
+  }
   return {
     col: Math.floor(index / DEFAULT_ROWS_PER_COLUMN),
     row: index % DEFAULT_ROWS_PER_COLUMN,
@@ -57,7 +65,7 @@ export function Desktop({ items, onOpen }) {
   const effectiveCells = useMemo(() => {
     const result = {};
     items.forEach((item, index) => {
-      result[item.id] = cells[item.id] ?? defaultCell(index);
+      result[item.id] = cells[item.id] ?? defaultCell(item.id, index);
     });
     return result;
   }, [items, cells]);

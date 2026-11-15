@@ -528,6 +528,26 @@ a:focus-visible {
   outline: none;
 }
 
+/* terminal icon defaults to the black hole's center (see defaultCell in
+   Desktop.jsx), so drop its chip background/border and let the glyph+label
+   float directly over the glow instead of sitting in a boxed tile */
+.desktop__icon[data-testid="desktop-icon-terminal"] {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text);
+  text-shadow: 0 0 10px rgba(192, 132, 252, 0.8), 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.desktop__icon[data-testid="desktop-icon-terminal"] .desktop__icon-glyph {
+  filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.75));
+}
+
+.desktop__icon[data-testid="desktop-icon-terminal"]:hover,
+.desktop__icon[data-testid="desktop-icon-terminal"]:focus-visible {
+  color: var(--accent);
+  border-color: transparent;
+}
+
 .desktop__icon-glyph {
   display: flex;
 }
