@@ -633,6 +633,17 @@ a:focus-visible {
   transform-origin: center;
 }
 
+/* terminal spawns centered on the black hole (see WINDOW_OPTIONS in Shell.jsx);
+   matching violet glow, static rather than pulsing so it doesn't fight with reading/typing */
+.window[data-testid="window-terminal"] {
+  border-color: var(--accent);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.35),
+    0 0 24px 6px rgba(192, 132, 252, 0.4),
+    0 0 64px 20px rgba(192, 132, 252, 0.22),
+    0 0 130px 44px rgba(192, 132, 252, 0.1);
+}
+
 .window--closing {
   animation: window-exit 160ms ease-in forwards;
   pointer-events: none;

@@ -17,7 +17,7 @@ export function WindowManagerProvider({ children }) {
   const [windows, setWindows] = useState([]);
   const nextZIndexRef = useRef(1);
 
-  const openWindow = (id, title, initialSize) => {
+  const openWindow = (id, title, initialSize, options) => {
     const zIndex = nextZIndexRef.current++;
     setWindows((current) => {
       const existing = current.find((w) => w.id === id);
@@ -26,21 +26,31 @@ export function WindowManagerProvider({ children }) {
         return current.map((w) => (w.id === id ? { ...w, zIndex } : w));
       }
 
-      // Cascade each newly-opened window's spawn position so new windows
-      // don't all stack exactly on top of each other, and start below the
-      // taskbar/prompt (which sit in normal document flow above these
-      // fixed-position windows) instead of covering them at y: 0.
-      const cascadeOffset = (current.length * 28) % 280;
       const width = initialSize?.width ?? DEFAULT_WINDOW_WIDTH;
       const height = initialSize?.height ?? DEFAULT_WINDOW_HEIGHT;
+
+      let x;
+      let y;
+      if (options?.centered && typeof window !== 'undefined') {
+        x = Math.max(0, (window.innerWidth - width) / 2);
+        y = Math.max(0, (window.innerHeight - height) / 2);
+      } else {
+        // Cascade each newly-opened window's spawn position so new windows
+        // don't all stack exactly on top of each other, and start below the
+        // taskbar/prompt (which sit in normal document flow above these
+        // fixed-position windows) instead of covering them at y: 0.
+        const cascadeOffset = (current.length * 28) % 280;
+        x = cascadeOffset;
+        y = 80 + cascadeOffset;
+      }
 
       return [
         ...current,
         {
           id,
           title,
-          x: cascadeOffset,
-          y: 80 + cascadeOffset,
+          x,
+          y,
           width,
           height,
           zIndex,

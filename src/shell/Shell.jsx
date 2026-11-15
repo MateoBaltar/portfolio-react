@@ -29,16 +29,27 @@ const SECTIONS = {
 };
 
 const SECTION_IDS = Object.keys(SECTIONS);
-// Desktop mode adds one more openable "app" beyond the content sections:
-// the terminal itself now lives inside its own window instead of being
-// permanently docked, so it needs a place in the icon grid/start menu.
-const DESKTOP_ITEM_IDS = [...SECTION_IDS, 'terminal'];
+// games are reachable by typing their name in the terminal (still in `help`),
+// but left off the icon grid and start menu so they're found, not just listed
+const HIDDEN_FROM_DESKTOP_MENU = ['minesweeper', 'snake'];
+// terminal isn't in SECTIONS (it's not a content section) but still needs
+// a spot in the icon grid and start menu
+const DESKTOP_ITEM_IDS = [
+  ...SECTION_IDS.filter((id) => !HIDDEN_FROM_DESKTOP_MENU.includes(id)),
+  'terminal',
+];
 
 // starting window size for anything that needs more than the default;
 // the resize handle covers whatever this doesn't (expert minesweeper etc)
 const WINDOW_SIZES = {
   minesweeper: { width: 560, height: 640 },
   snake: { width: 420, height: 480 },
+  terminal: { width: 520, height: 420 },
+};
+
+// terminal spawns centered over the black hole instead of cascading like other windows
+const WINDOW_OPTIONS = {
+  terminal: { centered: true },
 };
 
 const LANG_CODES = ['en', 'es'];
@@ -109,7 +120,7 @@ function ShellBody() {
   const openSection = (id) => {
     lastSectionRef.current = { id, label: navLabels[id] };
     if (mode === 'desktop') {
-      openWindow(id, navLabels[id], WINDOW_SIZES[id]);
+      openWindow(id, navLabels[id], WINDOW_SIZES[id], WINDOW_OPTIONS[id]);
     } else {
       setActiveSection(id);
     }
@@ -135,7 +146,7 @@ function ShellBody() {
     if (mode === 'desktop') {
       const alreadyOpen = windows.some((w) => w.id === last.id);
       if (!alreadyOpen) {
-        openWindow(last.id, last.label, WINDOW_SIZES[last.id]);
+        openWindow(last.id, last.label, WINDOW_SIZES[last.id], WINDOW_OPTIONS[last.id]);
       }
     } else if (activeSection === null && last.id !== 'terminal') {
       // mobile has no stacked-section view for the terminal, so there's nothing to

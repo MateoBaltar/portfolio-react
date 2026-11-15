@@ -367,21 +367,44 @@ test('desktop: the sound toggle switches mute state', () => {
   vi.useRealTimers();
 });
 
-test('desktop: GitHub and Minesweeper are openable from the start menu and the icon grid', () => {
+test('desktop: GitHub is openable from the start menu and the icon grid', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
   render(<Shell />);
   skipBoot();
 
   expect(screen.getByTestId('desktop-icon-github')).toBeInTheDocument();
-  expect(screen.getByTestId('desktop-icon-minesweeper')).toBeInTheDocument();
 
   fireEvent.click(screen.getByTestId('desktop-menu-button'));
   expect(screen.getByTestId('desktop-menu-item-github')).toBeInTheDocument();
-  expect(screen.getByTestId('desktop-menu-item-minesweeper')).toBeInTheDocument();
 
-  fireEvent.doubleClick(screen.getByTestId('desktop-icon-minesweeper'));
+  fireEvent.doubleClick(screen.getByTestId('desktop-icon-github'));
+  expect(screen.getByTestId('window-github')).toBeInTheDocument();
+  vi.useRealTimers();
+});
+
+test('desktop: Minesweeper and Snake are hidden from the icon grid and start menu, but still open via a typed command', () => {
+  window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
+  vi.useFakeTimers();
+  render(<Shell />);
+  skipBoot();
+
+  expect(screen.queryByTestId('desktop-icon-minesweeper')).toBeNull();
+  expect(screen.queryByTestId('desktop-icon-snake')).toBeNull();
+
+  fireEvent.click(screen.getByTestId('desktop-menu-button'));
+  expect(screen.queryByTestId('desktop-menu-item-minesweeper')).toBeNull();
+  expect(screen.queryByTestId('desktop-menu-item-snake')).toBeNull();
+  fireEvent.click(screen.getByTestId('desktop-menu-button'));
+
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'minesweeper' } });
+  fireEvent.submit(input.closest('form'));
   expect(screen.getByTestId('window-minesweeper')).toBeInTheDocument();
+
+  fireEvent.change(input, { target: { value: 'snake' } });
+  fireEvent.submit(input.closest('form'));
+  expect(screen.getByTestId('window-snake')).toBeInTheDocument();
   vi.useRealTimers();
 });
 
@@ -398,20 +421,16 @@ test('mobile: GitHub and Minesweeper appear in the flat nav bar', () => {
   vi.useRealTimers();
 });
 
-test('desktop: Snake is openable from the start menu and the icon grid, with its own icon and a larger starting window', () => {
+test('desktop: Snake opens via a typed command with a larger starting window', () => {
   window.matchMedia = () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} });
   vi.useFakeTimers();
   render(<Shell />);
   skipBoot();
 
-  const icon = screen.getByTestId('desktop-icon-snake');
-  expect(icon).toBeInTheDocument();
-  expect(icon.querySelector('svg')).toBeTruthy();
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'snake' } });
+  fireEvent.submit(input.closest('form'));
 
-  fireEvent.click(screen.getByTestId('desktop-menu-button'));
-  expect(screen.getByTestId('desktop-menu-item-snake')).toBeInTheDocument();
-
-  fireEvent.doubleClick(icon);
   const win = screen.getByTestId('window-snake');
   expect(win).toBeInTheDocument();
   expect(win.style.width).toBe('420px');

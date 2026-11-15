@@ -36,8 +36,14 @@ function saveCells(cells) {
   }
 }
 
+// wraps into a new column every N rows so a long icon list doesn't make the page scroll
+const DEFAULT_ROWS_PER_COLUMN = 4;
+
 function defaultCell(index) {
-  return { col: 0, row: index };
+  return {
+    col: Math.floor(index / DEFAULT_ROWS_PER_COLUMN),
+    row: index % DEFAULT_ROWS_PER_COLUMN,
+  };
 }
 
 export function Desktop({ items, onOpen }) {
