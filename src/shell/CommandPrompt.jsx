@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { playKey } from './sound';
 
+// always available no matter what the host app passes in as commandNames
+const BUILT_IN_COMMANDS = ['help', 'clear'];
+
 export function CommandPrompt({
   commandNames,
   onCommand,
@@ -8,6 +11,7 @@ export function CommandPrompt({
   helpIntro,
   prompt,
   hint,
+  commandDescriptions = {},
   extraCommands = {},
   easterEggs = {},
 }) {
@@ -25,15 +29,23 @@ export function CommandPrompt({
     const name = rawName.toLowerCase();
 
     if (name === 'help') {
-      setLog((prev) => [...prev, helpIntro, ...commandNames]);
+      const lines = [...BUILT_IN_COMMANDS, ...commandNames].map((cmd) => {
+        const description = commandDescriptions[cmd];
+        return description ? `${cmd} - ${description}` : cmd;
+      });
+      setLog((prev) => [...prev, helpIntro, ...lines]);
+    } else if (name === 'clear') {
+      setLog([]);
     } else if (commandNames.includes(name)) {
       // echo it back so the typed line doesn't just vanish
-      setLog((prev) => [...prev, [name, ...args].join(' ')]);
+      const echoLine = [name, ...args].join(' ');
       if (extraCommands[name]) {
-        // Self-contained commands (e.g. `fetch`) print straight into this
-        // log instead of asking the shell to do anything external.
-        setLog((prev) => [...prev, ...extraCommands[name](args)]);
+        // run any side effect (e.g. lang calling setLang) as a plain statement here,
+        // not inside the setLog updater below; React can call updaters during render
+        const resultLines = extraCommands[name](args);
+        setLog((prev) => [...prev, echoLine, ...resultLines]);
       } else {
+        setLog((prev) => [...prev, echoLine]);
         onCommand(name, args);
       }
     } else if (easterEggs[name]) {

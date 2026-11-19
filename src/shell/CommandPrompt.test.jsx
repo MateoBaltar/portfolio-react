@@ -88,6 +88,74 @@ test('an easter egg command prints its joke response and is not listed in help',
   expect(screen.getByText('about')).toBeInTheDocument();
 });
 
+test('clear empties the log, including the seeded hint', () => {
+  const onCommand = vi.fn();
+  render(
+    <CommandPrompt
+      commandNames={['about']}
+      onCommand={onCommand}
+      notFoundMessage="command not found"
+      helpIntro="Available commands:"
+      hint="Type 'help' to see available commands."
+    />
+  );
+  expect(screen.getByText("Type 'help' to see available commands.")).toBeInTheDocument();
+
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'about' } });
+  fireEvent.submit(input.closest('form'));
+  expect(screen.getByText('about')).toBeInTheDocument();
+
+  fireEvent.change(input, { target: { value: 'clear' } });
+  fireEvent.submit(input.closest('form'));
+  expect(screen.queryByText("Type 'help' to see available commands.")).toBeNull();
+  expect(screen.queryByText('about')).toBeNull();
+  expect(onCommand).toHaveBeenCalledTimes(1); // only from the first submit, not from clear
+});
+
+test('help shows each command\'s description, including built-ins not in commandNames', () => {
+  const onCommand = vi.fn();
+  render(
+    <CommandPrompt
+      commandNames={['about']}
+      onCommand={onCommand}
+      notFoundMessage="command not found"
+      helpIntro="Available commands:"
+      commandDescriptions={{ about: 'view the about section', clear: 'clear the terminal' }}
+    />
+  );
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'help' } });
+  fireEvent.submit(input.closest('form'));
+  expect(screen.getByText('about - view the about section')).toBeInTheDocument();
+  expect(screen.getByText('clear - clear the terminal')).toBeInTheDocument();
+});
+
+test('an extraCommands side effect runs even though the echo and its output share one log update', () => {
+  const onCommand = vi.fn();
+  let sideEffectRan = false;
+  render(
+    <CommandPrompt
+      commandNames={['lang']}
+      onCommand={onCommand}
+      notFoundMessage="command not found"
+      helpIntro="Available commands:"
+      extraCommands={{
+        lang: (args) => {
+          sideEffectRan = true;
+          return args[0] === 'es' ? [] : ['usage: lang en|es'];
+        },
+      }}
+    />
+  );
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'lang' } });
+  fireEvent.submit(input.closest('form'));
+  expect(sideEffectRan).toBe(true);
+  expect(screen.getByText('usage: lang en|es')).toBeInTheDocument();
+  expect(onCommand).not.toHaveBeenCalled();
+});
+
 test('typing in the input plays a key sound per keystroke', () => {
   const onCommand = vi.fn();
   render(<CommandPrompt commandNames={['about']} onCommand={onCommand} notFoundMessage="command not found" helpIntro="Available commands:" />);

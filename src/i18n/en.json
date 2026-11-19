@@ -7,7 +7,22 @@
     "commandNotFound": "command not found, try 'help'",
     "hint": "Type 'help' to see available commands.",
     "menuLabel": "Menu",
-    "fetch": { "osLabel": "OS", "shellLabel": "Shell", "hostLabel": "Host", "languagesLabel": "Languages" }
+    "fetch": { "osLabel": "OS", "shellLabel": "Shell", "hostLabel": "Host", "languagesLabel": "Languages" },
+    "langUsage": "usage: lang en|es",
+    "commandHelp": {
+      "help": "list available commands",
+      "clear": "clear the terminal",
+      "about": "view the about section",
+      "skills": "view skills",
+      "experience": "view experience",
+      "projects": "view projects",
+      "contact": "view contact info",
+      "github": "view GitHub stats",
+      "minesweeper": "play Minesweeper",
+      "snake": "play Snake",
+      "lang": "switch language (en|es)",
+      "fetch": "show system info"
+    }
   },
   "about": {
     "title": "About",

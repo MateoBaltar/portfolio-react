@@ -54,9 +54,8 @@ const WINDOW_OPTIONS = {
 
 const LANG_CODES = ['en', 'es'];
 
-// A small neofetch-style block. The ASCII art stays constant across
-// languages; the stats line labels come from the dictionary.
-const ASCII_FLAME = ['  (', ' ) \\', '( ) )', ' )_/'];
+// tiny neofetch-style block: ring around an empty core, matches the desktop background
+const ASCII_BLACKHOLE = ['  .:=*#*=:.', ' :#(    )#:', '  `:=*#*=:`'];
 
 function buildFetchLines(t) {
   const fetchStrings = t('shell').fetch;
@@ -71,10 +70,10 @@ function buildFetchLines(t) {
     `${fetchStrings.languagesLabel}: ${languages}`,
   ];
 
-  const lineCount = Math.max(ASCII_FLAME.length, statLines.length);
+  const lineCount = Math.max(ASCII_BLACKHOLE.length, statLines.length);
   const lines = [];
   for (let i = 0; i < lineCount; i += 1) {
-    const art = (ASCII_FLAME[i] ?? '').padEnd(8);
+    const art = (ASCII_BLACKHOLE[i] ?? '').padEnd(13);
     lines.push(`${art}${statLines[i] ?? ''}`);
   }
   return lines;
@@ -111,11 +110,22 @@ function ShellBody() {
     [navLabels]
   );
 
-  // Shared by both CommandPrompt instances (the windowed terminal on
-  // desktop, the permanently-docked one on mobile) so `fetch`/easter eggs
-  // work identically everywhere the terminal exists.
+  // shared by the windowed terminal (desktop) and the docked one (mobile)
   const terminalCommandNames = useMemo(() => [...SECTION_IDS, 'lang', 'fetch'], []);
-  const terminalExtraCommands = useMemo(() => ({ fetch: () => buildFetchLines(t) }), [t]);
+  const terminalExtraCommands = useMemo(
+    () => ({
+      fetch: () => buildFetchLines(t),
+      lang: (args) => {
+        if (LANG_CODES.includes(args[0])) {
+          setLang(args[0]);
+          return [];
+        }
+        return [shellStrings.langUsage];
+      },
+    }),
+    [t, setLang, shellStrings]
+  );
+  const commandDescriptions = shellStrings.commandHelp;
 
   const openSection = (id) => {
     lastSectionRef.current = { id, label: navLabels[id] };
@@ -126,13 +136,7 @@ function ShellBody() {
     }
   };
 
-  const handleCommand = (name, args) => {
-    if (name === 'lang') {
-      if (LANG_CODES.includes(args[0])) {
-        setLang(args[0]);
-      }
-      return;
-    }
+  const handleCommand = (name) => {
     openSection(name);
   };
 
@@ -213,6 +217,7 @@ function ShellBody() {
                   helpIntro={shellStrings.helpIntro}
                   prompt={shellStrings.prompt}
                   hint={shellStrings.hint}
+                  commandDescriptions={commandDescriptions}
                   extraCommands={terminalExtraCommands}
                   easterEggs={EASTER_EGGS}
                 />
@@ -253,6 +258,7 @@ function ShellBody() {
         helpIntro={shellStrings.helpIntro}
         prompt={shellStrings.prompt}
         hint={shellStrings.hint}
+        commandDescriptions={commandDescriptions}
         extraCommands={terminalExtraCommands}
         easterEggs={EASTER_EGGS}
       />
